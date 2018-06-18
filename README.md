@@ -101,7 +101,7 @@ jp@jp-CP$ node main.js all -c 2
 ```
 範例 3: 指定2筆完整參數，並且存到檔案中
 ```
-jp@jp-CP$ node main.js all -c 2 
+jp@jp-CP$ node main.js all -c 2 -s
 ```
 
 
