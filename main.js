@@ -21,7 +21,7 @@ async function queryService(url,cb){
 	}catch(e) {
 		console.log("Query ERR",e.statusCode,url);
 		// return new Promise.reject(e)
-		throw Error("query websit error")
+		throw Error(`query websit error: ${e.statusCode} ${url}`)
 	}
 }
 
@@ -352,6 +352,7 @@ let calculate =(data) => {
 		PredictPE = [Math.min(AvgMaxPE, H_PER[0])
 					,Math.min(AvgMinPE,L_PER[0])];
 		log(`預估本益比: ${PredictPE[0].toFixed(2)}~${PredictPE[1].toFixed(2)}`);
+		log(`過去本益比區間(年): 高:[${H_PER}] 低:[${L_PER}] `);
 	} else {
 		log(`預估本益比(失敗): [${H_PER}] [${L_PER}] `);
 	}
@@ -413,7 +414,7 @@ let calculate =(data) => {
 				(過去的營收×預估的營收年增率×預估稅後淨後率)÷股本×10
 		*/
 		PredictEPS = (PredictedEarning * PredictProfitRatio *100 /Capital *10).toFixed(3)
-		log("預估EPS:" + PredictEPS);
+		log("預估EPS: " + PredictEPS);
 	
 		/*預估股價高低落點*/
 		let PredictHighestPrice = PredictEPS*PredictPE[0];
@@ -477,10 +478,11 @@ const saveData = (file, data, type) => {
 
 const storeStockInfo = (data, save=false, override=false)=>{
 	if(save){
-		console.log("(已存檔)-"+( override ===true ? "覆寫":"附加"));
+		let fileName = 'out/parse.txt';
+		console.log(`(已存檔)-${override === true ? "覆寫" : "附加"} (${fileName})` );
 		let conjString = data.reduce((cal,val)=> cal+val);
 		// console.log(conjString)
-		saveData("out/parse.txt",conjString,override ===true ? "OVERRIDE":"APPEN");
+		saveData(fileName,conjString,override ===true ? "OVERRIDE":"APPEN");
 	} else {
 		console.log("(不存檔)")
 	}
@@ -529,7 +531,6 @@ var calculateAll = async(stockID,options ) => {
 				}
 				//設定延遲時間
 				await delay(parseInt(200*Math.random()))
-				//return Promise.resolve({data:false})
 			} catch (e){
 				console.log(`fail at : ${stock}`);
 				saveData("./out/fail.tx", `fail at : ${stock} \n${e}`, "APPEN");
