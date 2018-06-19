@@ -282,7 +282,7 @@ let calculate =(data) => {
 		// }
 
 		data.map( (val,i) => {
-			// console.log(i,val)
+			// console.log(i,val)	
 			//有負值，就不繼續計算
 			if(val < 0 || !isValidOfPEAverage ) {
 				isValidOfPEAverage = false;
@@ -510,27 +510,25 @@ var calculateAll = async(stockID,options ) => {
 	/* promise 序列化函數 */ 
 	const promiseSerial = funcs =>
 		funcs.reduce((promise, func) =>
-		promise.then(result => func(promise).then(Array.prototype.concat.bind(result))),
+		promise.then(result => func().then(Array.prototype.concat.bind(result))),
 		Promise.resolve([]));
 	/* 定義每個promise處理函數*/ 
 	const funcs = data.map(
-		stock =>async (req) =>  {
-			// 取得promise中的resolve資料 
-			let listItem = (await req).slice(-1);
-			let accId = listItem[0] === undefined ? undefined : listItem[0].id
-			// console.log(accId);
-			//if(accId ===undefined || accId != -1 && accId < options.maxCount-1){
-			if(accId ===undefined || accId != -1){
+		stock =>async () =>  {
+			try {
 				let value = await evaluate(stock,options);
 				/*除非要求存檔全部，不然只存有效資料*/
 				if(options.allData|value.valid){
-					let id = (accId +1)|| 0
-					return Promise.resolve({data:value.data,id})
+					return Promise.resolve({data:value.data})
 				}
 				//設定延遲時間
-				await delay(parseInt(400*Math.random()))
-			}
-			return Promise.resolve({data:false,id:accId})
+				await delay(parseInt(200*Math.random()))
+				//return Promise.resolve({data:false})
+			} catch (e){
+				console.log(`fail at : ${stock}`)
+			} 
+			return Promise.resolve({data:false})
+
 		})
 	/*濾出有效資料*/
 	let reqData = (await promiseSerial(funcs)).filter(val=> val.data !=false)
