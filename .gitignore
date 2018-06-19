@@ -2,3 +2,4 @@ node_modules
 out
 src
 package-lock.json
+.DS_Store

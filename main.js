@@ -78,6 +78,10 @@ function extractBasicInfo($){
 				 if(i == 0){
 					stockName =e.children[0].data.split(/[\s,\t,\n]+/).join("").slice(0,-4);
 					if(DBG) console.log(stockName)
+					if (stockName === undefined || stockName === ""){
+						if (DBG) console.log($("option").eq(0).text());
+						stockName = $("option").eq(0).text();
+					}
 				 }
 			break;
 		}
@@ -251,6 +255,8 @@ let calculate =(data) => {
 
 	let isValidCompluted = false;
 	let displayString = [];
+	let RiskEarningRatio = -1;
+
 	const log = (val,hide) => {
 		displayString.push(val+"\n");
 		if(!hide)
@@ -423,7 +429,7 @@ let calculate =(data) => {
 		log(`預估風險: ${PredictLossRatio.toFixed(2)}`);
 
 		/*風險報酬倍數*/
-		let RiskEarningRatio = Math.abs(PredictEarningRatio/PredictLossRatio)
+		RiskEarningRatio = Math.abs(PredictEarningRatio/PredictLossRatio)
 		log(`風險報酬倍數: ${RiskEarningRatio.toFixed(2)}`);
 
 		/*計算過去兩年EPS的年增率
@@ -446,7 +452,10 @@ let calculate =(data) => {
 		log("(有)數值不正確，無法進行計算 !!!");
 	}
 	log("\n");
-	return {valid:isValidCompluted,data:displayString};
+	return {valid:isValidCompluted,
+		data:displayString,
+		riskEarningRatio:RiskEarningRatio
+	};
 }
 
 /* 檔案操作 */
@@ -501,37 +510,37 @@ var calculateAll = async(stockID,options ) => {
 	let storeString ={};
 	// 抓取所有股票
 	let data = await getTWStockList(stockID);
-	//travelingBeginIndex
 	data = data.slice(options.travelingBeginIndex);
-	//console.log(data)
-	//return ;
-	
+
 	// 遍例抓取的股票陣列
-	/* promise 序列化函數 */ 
+	/* promise 序列化函數 */
 	const promiseSerial = funcs =>
 		funcs.reduce((promise, func) =>
 		promise.then(result => func().then(Array.prototype.concat.bind(result))),
 		Promise.resolve([]));
-	/* 定義每個promise處理函數*/ 
+	/* 定義每個promise處理函數*/
 	const funcs = data.map(
 		stock =>async () =>  {
 			try {
 				let value = await evaluate(stock,options);
 				/*除非要求存檔全部，不然只存有效資料*/
 				if(options.allData|value.valid){
-					return Promise.resolve({data:value.data})
+					return Promise.resolve({ data: value.data, riskEarningRatio: value.riskEarningRatio})
 				}
 				//設定延遲時間
 				await delay(parseInt(200*Math.random()))
 				//return Promise.resolve({data:false})
 			} catch (e){
-				console.log(`fail at : ${stock}`)
-			} 
-			return Promise.resolve({data:false})
+				console.log(`fail at : ${stock}`);
+				saveData("./out/fail.tx", `fail at : ${stock} \n${e}`, "APPEN");
+			}
+			return Promise.resolve({ data: false, riskEarningRatio:-1})
 
 		})
-	/*濾出有效資料*/
-	let reqData = (await promiseSerial(funcs)).filter(val=> val.data !=false)
+	/*濾出有效資料，並且排序*/
+	let reqData = (await promiseSerial(funcs))
+			.filter(val=> val.data !=false)
+			.sort((a, b) => b.riskEarningRatio - a.riskEarningRatio);
 	/*物件串接*/
 	storeString.data = reqData.map(val => val.data).reduce((acc, val)=>acc.concat(val));
 	// console.log(storeString.data);
