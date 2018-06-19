@@ -1,4 +1,4 @@
-# stocktw
+# stocktw (測試階段)
 
 # 簡介
 本程式是用來爬取股票以及計算基本數值
@@ -21,14 +21,15 @@ jp@jp-CP$ node main.js -h
 
   Options:
 
-    -s, --save                運算玩後進行存檔
-    -o, --save-override       存檔方式使用"覆寫"
-    -p, --save-append         存檔方式使用"附加"(default)
-    -a, --save-availableOnly  (all才有用)只存有完整算完的資料(default)
-    -l, --save-allData        (all才有用)除存所以抓取資料
-    -c, --count <value>       (all才有用)遍例的有效上限(default:10)
-    !, --debug                開啟debug mode
-    -h, --help                output usage information
+    -s, --save                     運算完後進行存檔
+    -o, --save-override            存檔方式使用"覆寫"
+    -p, --save-append              存檔方式使用"附加"(default)
+    -a, --save-availableOnly       (all才有用)只存有完整算完的資料(default)
+    -l, --save-allData             (all才有用)存檔所有抓取到資料(包含沒完整)
+    -c, --count <value>            (all才有用)遍歷抓取有效資料的上限(default:10)
+    -b, --traveling-begin <value>  (all才有用)設定遍歷起始點
+    !, --debug                     開啟debug mode
+    -h, --help                     output usage information
 ```
 
 ## 4. 查詢單一股票
