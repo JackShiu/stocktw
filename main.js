@@ -410,8 +410,8 @@ let calculate =(data) => {
 		&& Capital
 	){
 		/*預估EPS
-		算法: (預測營收 * 預測年營收成長率 * 100)
-				(過去的營收×預估的營收年增率×預估稅後淨後率)÷股本×10
+		算法: (預測營收 * 預測年營收成長率 * 100)÷股本×10
+			   =(過去的營收×預估的營收年增率×預估稅後淨後率)÷股本×10
 		*/
 		PredictEPS = (PredictedEarning * PredictProfitRatio *100 /Capital *10).toFixed(3)
 		log("預估EPS: " + PredictEPS);
@@ -430,7 +430,12 @@ let calculate =(data) => {
 		log(`預估風險: ${PredictLossRatio.toFixed(2)}`);
 
 		/*風險報酬倍數*/
-		RiskEarningRatio = Math.abs(PredictEarningRatio/PredictLossRatio)
+		if(PredictLossRatio < 0 ){ //小於0表示沒風險，所以以一個很小的非零數值取代
+			RiskEarningRatio = Math.abs(PredictEarningRatio/0.0001)
+		}else {
+			RiskEarningRatio = Math.abs(PredictEarningRatio/PredictLossRatio)
+		}
+
 		log(`風險報酬倍數: ${RiskEarningRatio.toFixed(2)}`);
 
 		/*計算過去兩年EPS的年增率
@@ -476,9 +481,9 @@ const saveData = (file, data, type) => {
 	})
 }
 
-const storeStockInfo = (data, save=false, override=false)=>{
+const storeStockInfo = (fileName, data, save=false, override=false)=>{
 	if(save){
-		let fileName = 'out/parse.txt';
+		//let fileName = 'out/parse.txt';
 		console.log(`(已存檔)-${override === true ? "覆寫" : "附加"} (${fileName})` );
 		let conjString = data.reduce((cal,val)=> cal+val);
 		// console.log(conjString)
@@ -587,7 +592,6 @@ var calculateAll = async(stockID,options ) => {
 	// if (options.override) console.log('  - override');
 	// if (options.append) console.log('  - append');
 	//if (options.travelingBegin) console.log('  - travelingBegin'+options.travelingBegin);
-	// let timeformat = (val) => ('0'+val).substr(-2); //自動補零
 
 	if(func === undefined) return -1;
 	
@@ -617,11 +621,17 @@ var calculateAll = async(stockID,options ) => {
 	
 	//呼叫評估函數
 	let storeData = await func(stockID,options);
-
+	let date = new Date()
+	let timeformat = (val) => ('0'+val).substr(-2); //自動補零
+	let dateNow = `${date.getFullYear()}-${timeformat(date.getMonth() + 1)}-${timeformat(date.getDate())}`;
+	let fileName = `${dateNow}-all.txt`
+	if(stockID != undefined)
+		fileName = `${dateNow}-${stockID}.txt`;
+		
 	// console.log(options, storeData)
 	if((options.save || options.override|| options.append)
 		&&storeData.data !== undefined && storeData.data.length >0){
-			storeStockInfo(storeData.data,options.save,options.override)
+			storeStockInfo(fileName,storeData.data,options.save,options.override)
 	} else {
 		console.log("(不存檔)")
 	}
