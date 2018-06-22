@@ -483,7 +483,7 @@ const saveData = (file, data, type) => {
 
 const storeStockInfo = (fileName, data, save=false, override=false)=>{
 	if(save){
-		//let fileName = 'out/parse.txt';
+		fileName = `out/${fileName}`;
 		console.log(`(已存檔)-${override === true ? "覆寫" : "附加"} (${fileName})` );
 		let conjString = data.reduce((cal,val)=> cal+val);
 		// console.log(conjString)
