@@ -365,7 +365,9 @@ var calculateAll = async(stockID,options ) => {
 				await delay(parseInt(200*Math.random()))
 			} catch (e){
 				console.log(`fail at : ${stock}`);
-				saveData("./out/fail.tx", `fail at : ${stock} \n${e}`, "APPEN");
+				let date = new Date();
+				let currentTime = `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+				saveData("./out/fail.txt", `${currentTime} {${stock}} : ${e}\n`, "APPEN");
 			}
 			return Promise.resolve({ data: false, riskEarningRatio:-1})
 
