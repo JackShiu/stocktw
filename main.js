@@ -1,162 +1,15 @@
 // const request = require("request");
-const rp = require('request-promise');
-const cheerio = require('cheerio');
-const iconv = require('iconv-lite');
+// const rp = require('request-promise');
+// const cheerio = require('cheerio');
+// const iconv = require('iconv-lite');
 const fs = require('fs-extra')
 var program = require('commander');
 var delay = require('await-delay');
 
+const { queryService} = require("./src/parser/util/util")
+const { getStockData} = require("./src/parser/jsjustweb.jihsun.com.tw/main")
 let DBG =false;
 
-async function queryService(url,cb){
-    const opts = {
-        uri: url,
-        "User-Agent":'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.90 Safari/537.37',
-		encoding: null
-    };
-	try {
-		let body = await rp(opts);
-		body = iconv.decode(body, 'big5');
-		return cb(cheerio.load(body));
-	}catch(e) {
-		console.log("Query ERR",e.statusCode,url);
-		// return new Promise.reject(e)
-		throw Error(`query websit error: ${e.statusCode} ${url}`)
-	}
-}
-
-const parseValue =(value) => {
-	if(value === 'N/A' || value === '' ) return -1;
-	return parseFloat(value.split(',').join(''));
-}
-
-/* =====Web1 Page 1==== */ 
-function extractBasicInfo($){
-	let H_PER=[];
-	let L_PER=[];
-	let currentStartStockValue; //Current start Stock Value
-	let currentStockValue; //Current Stock Value
-	let currentPERValue; // Current PER Value
-	let stockName; //stock name
-	let ProductType;
-	$(".t01 td").each((i,e) =>{
-		var value = $(e).text();
-		// console.log(i,value)
-		switch(value){
-			case "開盤價":
-				currentStartStockValue = parseValue($(e).next().text());
-				if(DBG) console.log("開盤價:",currentStartStockValue);
-			break;
-			case "收盤價":
-				currentStockValue = parseValue($(e).next().text());
-				if(DBG) console.log("收盤價:",currentStockValue);
-			break;
-			case "本益比":
-				currentPERValue = parseValue($(e).next().text());
-				if(DBG) console.log("本益比:",currentPERValue);
-			break;
-			case "最高本益比":
-				 $(e).parent().children('td').each((index,node) => {
-				 	if(index != 0 && index< 6 ) //first is string  and extract six year value
-				 		H_PER.push(parseValue($(node).text()));
-				 });
-				 if(DBG) console.log("最高本益比:",H_PER);
-			break;
-			case "最低本益比":
-				 $(e).parent().children('td').each((index,node) => {
-				 	if(index != 0 && index< 6 ) //first is string and extract six year value
-				 		L_PER.push(parseValue($(node).text()));
-				 });
-				 if(DBG) console.log("最低本益比:",L_PER);
-			break;
-			case "營收比重":
-			ProductType = ($(e).next().text());
-				if(DBG) console.log("營收比重:",ProductType);
-			break;
-			default:
-				 //第一個是股票資訊，擷取股票名稱
-				 if(i == 0){
-					stockName =e.children[0].data.split(/[\s,\t,\n]+/).join("").slice(0,-4);
-					if(DBG) console.log(stockName)
-					if (stockName === undefined || stockName === ""){
-						if (DBG) console.log($("option").eq(0).text());
-						stockName = $("option").eq(0).text();
-					}
-				 }
-			break;
-		}
-	});
-	return ({
-		currentStartStockValue,
-		currentStockValue,
-		currentPERValue,
-		H_PER,
-		L_PER,
-		stockName,
-		ProductType
-	});
-}
-
-/* =====Web1 Page 2==== */ 
-function extractRevenueMonthly($){
-	let profitMonthYoY =[];
-	$("#oMainTable tr").not("#oScrollHead").not("#oScrollMenu").each((i,e)=>{
-		var value = $(e).children('td').eq(4).text();
-		if(i < 6) //only exact the six latest value
-			profitMonthYoY.push(parseValue(value));
-			// console.log(i,parseValue(value));
-	});
-	if(DBG) console.log("年增率(%):",profitMonthYoY);
-	return ({profitMonthYoY});
-}
-
-
-/* =====Web1 Page 3==== */ 
-function extractPerformance_M($){
-	let OperatingRevenueMonth =[];
-	let NetProfit = [];
-	let Capital;
-	$("#oMainTable tr").not("#oScrollHead").not("#oScrollMenu").each((i,e)=>{
-		var value = $(e).children('td').eq(2).text();
-		var tempProfitRatio = $(e).children('td').eq(4).text();
-		if(i < 4) //only exact the four latest value
-			OperatingRevenueMonth.push(parseValue(value));
-		if(i < 4)
-			NetProfit.push(parseValue(tempProfitRatio));
-			// console.log(i,parseValue(value));
-		if(i<1)
-			Capital = parseValue($(e).children('td').eq(1).text());
-	});
-	if(DBG) console.log("(過去)營業收入(元/季):",OperatingRevenueMonth);
-	if(DBG) console.log("(過去)稅後淨利(元/季):",NetProfit);
-	if(DBG) console.log("股本:",Capital);
-	return ({
-		OperatingRevenueMonth,
-		NetProfit,
-		Capital
-	});
-}
-
-/* =====Web1 Page4==== */
-function extractPerformance_Y($){
-	let YearEarningLastY ;
-	let EPSYear = [];
-	$("#oMainTable tr").not("#oScrollHead").not("#oScrollMenu").each((i,e)=>{
-		var value = $(e).children('td').eq(2).text();
-		var tempEPS = $(e).children('td').eq(7).text();
-		if(i < 1)
-			YearEarningLastY = parseValue(value);
-		if(i < 2)
-			EPSYear.push(parseValue(tempEPS));
-			// console.log(i,parseInt(value));
-	});
-	if(DBG) console.log("營業收入:",YearEarningLastY);
-	if(DBG) console.log("(去年)稅後每股盈餘(EPS)(元):",EPSYear);
-	return { 
-		YearEarningLastY,
-		EPSYear
-	}
-}
 
 /* =====Web2 Page1==== */
 function extractTWStockList($){
@@ -173,33 +26,6 @@ function extractTWStockList($){
 		}
 	});
 	return data
-}
-
-let getStockData =async(stockID)=>{
-	const BasicInfoWeb = `http://jsjustweb.jihsun.com.tw/z/zc/zca/zca_${stockID}.djhtm`;
-	const RevenueWeb_M = `http://jsjustweb.jihsun.com.tw/z/zc/zch/zch_${stockID}.djhtm`;
-	const PerformanceWeb_S = `http://jsjustweb.jihsun.com.tw/z/zc/zcd_${stockID}.djhtm`;
-	const PerformanceWeb_Y = `http://jsjustweb.jihsun.com.tw/z/zc/zcdj_${stockID}.djhtm`;
-	
-	//Await Sequentially
-	let web1 = await queryService(BasicInfoWeb, extractBasicInfo);
-	let web2 = await queryService(RevenueWeb_M,extractRevenueMonthly);
-	let web3 = await queryService(PerformanceWeb_S,extractPerformance_M);
-	let web4 = await queryService(PerformanceWeb_Y,extractPerformance_Y);
-	
-	let data = {
-		stockID,
-		BasicInfoWeb,
-		RevenueWeb_M,
-		PerformanceWeb_S,
-		PerformanceWeb_Y,
-		...web1,
-		...web2,
-		...web3,
-		...web4
-		}
-	//console.log(data)
-	return data;
 }
 
 /* 獲取所有上市股票ID
@@ -507,7 +333,7 @@ const readJASON = (file) => {
 let evaluate = async(stockID, options) =>{
 	if(DBG) console.log(`=====開始抓取網路資料:${stockID}====`)
 	/*獲取server資料*/
-	const data = await getStockData(stockID);
+	const data = await getStockData(stockID, {DBG});
 	/*計算單股各個數值*/
 	return calculate(data, options);
 }
