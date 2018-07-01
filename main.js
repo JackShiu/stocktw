@@ -409,51 +409,52 @@ let calculate =(data) => {
 		&& isValidOfPredictProfitRatio
 		&& Capital
 	){
-		/*預估EPS
-		算法: (預測營收 * 預測年營收成長率 * 100)÷股本×10
+     /*預估EPS
+		算法: (預測營收 * 預估稅後淨後率 * 100)÷股本×10
 			   =(過去的營收×預估的營收年增率×預估稅後淨後率)÷股本×10
 		*/
-		PredictEPS = (PredictedEarning * PredictProfitRatio *100 /Capital *10).toFixed(3)
-		log("預估EPS: " + PredictEPS);
-	
-		/*預估股價高低落點*/
-		let PredictHighestPrice = PredictEPS*PredictPE[0];
-		let PredictLowestPrice = PredictEPS*PredictPE[1];
-		log(`預估股價高低落點: ${PredictHighestPrice.toFixed(2)}~${PredictLowestPrice.toFixed(2)} ,(當前:${currentStockValue})`);
+     PredictEPS = (PredictedEarning * PredictProfitRatio * 100 / Capital * 10).toFixed(3);
+     log("預估EPS: " + PredictEPS);
 
-		/*預估報酬率*/
-		let PredictEarningRatio = (PredictHighestPrice - currentStockValue)/currentStockValue;
-		log(`預估報酬率: ${PredictEarningRatio.toFixed(2)}`);
+     /*預估股價高低落點*/
+     let PredictHighestPrice = PredictEPS * PredictPE[0];
+     let PredictLowestPrice = PredictEPS * PredictPE[1];
+     log(`預估股價高低落點: ${PredictHighestPrice.toFixed(2)}~${PredictLowestPrice.toFixed(2)} ,(當前:${currentStockValue})`);
 
-		/*預估風險*/
-		let PredictLossRatio = (currentStockValue - PredictLowestPrice)/currentStockValue;
-		log(`預估風險: ${PredictLossRatio.toFixed(2)}`);
+     /*預估報酬率*/
+     let PredictEarningRatio = (PredictHighestPrice - currentStockValue) / currentStockValue;
+     log(`預估報酬率: ${PredictEarningRatio.toFixed(2)}`);
 
-		/*風險報酬倍數*/
-		if(PredictLossRatio < 0 ){ //小於0表示沒風險，所以以一個很小的非零數值取代
-			RiskEarningRatio = Math.abs(PredictEarningRatio/0.0001)
-		}else {
-			RiskEarningRatio = Math.abs(PredictEarningRatio/PredictLossRatio)
-		}
+     /*預估風險*/
+     let PredictLossRatio = (currentStockValue - PredictLowestPrice) / currentStockValue;
+     log(`預估風險: ${PredictLossRatio.toFixed(2)}`);
 
-		log(`風險報酬倍數: ${RiskEarningRatio.toFixed(2)}`);
+     /*風險報酬倍數*/
+     if (PredictLossRatio < 0) {
+       //小於0表示沒風險，所以以一個很小的非零數值取代
+       RiskEarningRatio = Math.abs(PredictEarningRatio / 0.0001);
+     } else {
+       RiskEarningRatio = Math.abs(PredictEarningRatio / PredictLossRatio);
+     }
 
-		/*計算過去兩年EPS的年增率
+     log(`風險報酬倍數: ${RiskEarningRatio.toFixed(2)}`);
+
+     /*計算過去兩年EPS的年增率
 		  算法： 去年/前年 -1
 		*/
-		let EPSYoY = EPSYear[0]/EPSYear[1]-1
+     let EPSYoY = EPSYear[0] / EPSYear[1] - 1;
 
-		/*計算PEG
+     /*計算PEG
 		  算法： 本益比 / EPS年增率
 		  概念：EPS=稅後淨利除以股本乘以10，納入了股本因素
 			   畢竟股本如果膨脹會有稀釋效果，用EPS成長率更能代表公司的獲利成長情況。
 		  判斷：台股PEG能降到0.4以下才稱得上具有股價低估的投資價值
 		*/
-		let PEG = (currentStockValue / PredictEPS) / EPSYoY /100;
-		log(`PEG : ${PEG.toFixed(2)}`);
+     let PEG = currentStockValue / PredictEPS / EPSYoY / 100;
+     log(`PEG : ${PEG.toFixed(2)}`);
 
-		isValidCompluted =true;
-	}else {
+     isValidCompluted = true;
+   }else {
 		/*數值不正確，無法進行計算*/
 		log("(有)數值不正確，無法進行計算 !!!");
 	}
