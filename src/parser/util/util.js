@@ -15,7 +15,7 @@ module.exports.queryService = async (url, cb, option) => {
     } catch (e) {
         console.log("Query ERR", e.statusCode, url);
         // return new Promise.reject(e)
-        throw Error(`query websit error: ${e.statusCode} ${url}`)
+        throw Error(`query websit error: ${e.statusCode} ${url}\nERR: ${e}`)
     }
 }
 
