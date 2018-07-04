@@ -1,8 +1,6 @@
 var program = require('commander');
-var delay = require('await-delay');
 
-const { getStockData} = require("./src/parser/jsjustweb.jihsun.com.tw/main");
-const { saveData, storeStockInfo} = require("./src/fs/fs");
+const { storeStockInfo} = require("./src/fs/fs");
 const { getTWStockList } = require("./src/parser/isin.twse.com.tw/main");
 const { evaluate, calculateAll} = require("./src/analysis/main");
 
