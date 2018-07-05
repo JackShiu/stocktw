@@ -7,12 +7,17 @@ let PredictProfitRatio = -1;
 let PredictEPS = -1;
 let PredictPE = [];
 let EPSYoY;
-let PEG;
+let PredictHighestPrice;
+let PredictLowestPrice;
+let PredictEarningRatio;
+let PredictLossRatio;
 let RiskEarningRatio = -1;
+let PEG;
 
 // other value
 let isValidOfPEAverage;
 let isValidOfpredictProfitMonthYoY;
+let isValidOfPredictProfitRatio;
 let isValidCompluted = false;
 let displayString = [];
 
@@ -23,9 +28,7 @@ const log = (val, hide) => {
 }
 
 
-/*最高本益比
-  最低本益比
-  預估本益比區間*/
+/*計算本益比(PE)常態分佈平均值*/
 const getPEAverage = (data, limit) => {
     let firstValue = -1;
     let MaxPE;
@@ -136,9 +139,8 @@ module.exports.calculate = (data) => {
     log(`基本資料網站: ${BasicInfoWeb}`);
     log(`收盤價: ${currentStockValue}`);
 
-	/*最高本益比
-	  最低本益比
-	  預估本益比區間*/
+    /* 1. 預估本益比區間
+    */
     isValidOfPEAverage = true;
     const AvgMaxPE = getPEAverage(H_PER, "MAX");
     const AvgMinPE = getPEAverage(L_PER, "MIN");
@@ -153,7 +155,7 @@ module.exports.calculate = (data) => {
         log(`預估本益比(失敗): [${H_PER}] [${L_PER}] `);
     }
 
-	/*預估營收年增率
+	/*2. 預估營收年增率
 	  條件：
 		1.近6個月營收年增率不能有負值
 		2."最新的月營收年增率"與這"六個月的平均"，取出最小值當作預估營收年增率
@@ -173,7 +175,7 @@ module.exports.calculate = (data) => {
         log("預估營收年增率(有負值,空值): (近六個月年營收)" + profitMonthYoY);
     }
 
-	/*預估營收
+	/*3. 預估營收
 	  算法： 去年營收*(1+預估營收年增率/100 )
 	*/
     if (isValidOfpredictProfitMonthYoY) {
@@ -183,10 +185,10 @@ module.exports.calculate = (data) => {
         log(`無法預估營收: LastYearEarning ${YearEarningLastY}`);
     }
 
-	/*預估稅後淨利率
-	  算法: 過去4個月(稅後淨利/營業收入)的平均
+	/*4. 預估稅後淨利率
+	  算法: 過去4季(稅後淨利/營業收入)的平均
 	*/
-    let isValidOfPredictProfitRatio = true
+    isValidOfPredictProfitRatio = true;
     let sumOFProfitRatio = NetProfit.reduce((acc, cur, i) => {
         let OR_M = OperatingRevenueMonth[i];
         if (cur < 0 || OR_M < 0) isValidOfPredictProfitRatio = false;
@@ -205,27 +207,27 @@ module.exports.calculate = (data) => {
         && isValidOfPredictProfitRatio
         && Capital
     ) {
-        /*預估EPS
+        /*5. 預估EPS
            算法: (預測營收 * 預估稅後淨後率 * 100)÷股本×10
                   =(過去的營收×預估的營收年增率×預估稅後淨後率)÷股本×10
            */
         PredictEPS = (PredictedEarning * PredictProfitRatio * 100 / Capital * 10).toFixed(3);
-        log("預估EPS: " + PredictEPS);
+        log(`預估EPS: ${PredictEPS} (過去兩年PES=[${EPSYear}])`);
 
-        /*預估股價高低落點*/
-        let PredictHighestPrice = PredictEPS * PredictPE[0];
-        let PredictLowestPrice = PredictEPS * PredictPE[1];
+        /*6. 預估股價高低落點*/
+        PredictHighestPrice = PredictEPS * PredictPE[0];
+        PredictLowestPrice = PredictEPS * PredictPE[1];
         log(`預估股價高低落點: ${PredictHighestPrice.toFixed(2)}~${PredictLowestPrice.toFixed(2)} ,(當前:${currentStockValue})`);
 
-        /*預估報酬率*/
-        let PredictEarningRatio = (PredictHighestPrice - currentStockValue) / currentStockValue;
+        /*7. 預估報酬率*/
+        PredictEarningRatio = (PredictHighestPrice - currentStockValue) / currentStockValue;
         log(`預估報酬率: ${PredictEarningRatio.toFixed(2)}`);
 
-        /*預估風險*/
-        let PredictLossRatio = (currentStockValue - PredictLowestPrice) / currentStockValue;
+        /*8. 預估風險*/
+        PredictLossRatio = (currentStockValue - PredictLowestPrice) / currentStockValue;
         log(`預估風險: ${PredictLossRatio.toFixed(2)}`);
 
-        /*風險報酬倍數*/
+        /*9. 風險報酬倍數*/
         if (PredictLossRatio < 0) {
             //小於0表示沒風險，所以以一個很小的非零數值取代
             RiskEarningRatio = Math.abs(PredictEarningRatio / 0.0001);
@@ -235,19 +237,19 @@ module.exports.calculate = (data) => {
 
         log(`風險報酬倍數: ${RiskEarningRatio.toFixed(2)}`);
 
-        /*計算過去兩年EPS的年增率
+        /*10. 計算過去兩年EPS的年增率
              算法： 去年/前年 -1
            */
         EPSYoY = EPSYear[0] / EPSYear[1] - 1;
 
-        /*計算PEG
+        /*11. 計算PEG
              算法： 本益比 / EPS年增率
              概念：EPS=稅後淨利除以股本乘以10，納入了股本因素
                   畢竟股本如果膨脹會有稀釋效果，用EPS成長率更能代表公司的獲利成長情況。
              判斷：台股PEG能降到0.4以下才稱得上具有股價低估的投資價值
            */
         PEG = currentStockValue / PredictEPS / EPSYoY / 100;
-        log(`PEG : ${PEG.toFixed(2)}`);
+        log(`PEG : ${PEG.toFixed(2)} `);
 
         isValidCompluted = true;
     } else {
