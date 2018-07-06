@@ -116,7 +116,7 @@ module.exports.calculate = (data) => {
 
         /* web 2 營收明細(月) */
         RevenueWeb_M, // 營收明細 (月) 網址
-        profitMonthYoY,//月營收年增率(array) (6 month)
+        profitMonthYoY,//月營收年增率(objec {value, month}) (6 month)
 
         /* web 3 經營績效(季) */
         PerformanceWeb_S,//經營績效(季) 網址
@@ -131,7 +131,8 @@ module.exports.calculate = (data) => {
         /* other options */
         DBG
     } = data;
-
+    displayString =[];
+    isValidCompluted = false;
     if (DBG) console.log(`=======開始計算========`)
     if (!DBG) log(`=======[${stockID}]========`, DBG)
     log(`股票：${stockName}`);
@@ -161,18 +162,18 @@ module.exports.calculate = (data) => {
 		2."最新的月營收年增率"與這"六個月的平均"，取出最小值當作預估營收年增率
 	*/
     isValidOfpredictProfitMonthYoY = true;
-    let sumOFprofitMonthYoY = profitMonthYoY.reduce((acc, cur) => {
-        if (cur < 0) isValidOfpredictProfitMonthYoY = false;
+    let sumOFprofitMonthYoY = profitMonthYoY.value.reduce((acc, cur, i) => {
+        if (cur < 0 && profitMonthYoY.month[i] != "2") isValidOfpredictProfitMonthYoY = false;
         return acc + cur
     });
     if (isValidOfpredictProfitMonthYoY) {
         let averageOFprofitMonthYoY = (sumOFprofitMonthYoY / 6);
         if (DBG) console.log("平均營收年增率: " + averageOFprofitMonthYoY.toFixed(2));
-        if (DBG) console.log("最新收年增率: " + profitMonthYoY[0].toFixed(2));
-        predictProfitMonthYoY = profitMonthYoY[0] < averageOFprofitMonthYoY ? profitMonthYoY[0] : averageOFprofitMonthYoY;
-        log("預估營收年增率: " + predictProfitMonthYoY.toFixed(2));
+        if (DBG) console.log("最新收年增率: " + profitMonthYoY.value[0].toFixed(2));
+        predictProfitMonthYoY = profitMonthYoY.value[0] < averageOFprofitMonthYoY ? profitMonthYoY.value[0] : averageOFprofitMonthYoY;
+        log(`預估營收年增率: ${predictProfitMonthYoY.toFixed(2)}    (過去六個月 [${profitMonthYoY.value}])`);
     } else {
-        log("預估營收年增率(有負值,空值): (近六個月年營收)" + profitMonthYoY);
+        log("預估營收年增率(有負值,空值): (近六個月年營收)" + profitMonthYoY.value);
     }
 
 	/*3. 預估營收
@@ -189,15 +190,17 @@ module.exports.calculate = (data) => {
 	  算法: 過去4季(稅後淨利/營業收入)的平均
 	*/
     isValidOfPredictProfitRatio = true;
+    let tempProfitRatio = [];
     let sumOFProfitRatio = NetProfit.reduce((acc, cur, i) => {
         let OR_M = OperatingRevenueMonth[i];
         if (cur < 0 || OR_M < 0) isValidOfPredictProfitRatio = false;
         // console.log(acc,cur,OR_M,cur/OR_M,i);
+        tempProfitRatio.push((cur / OR_M).toFixed(3));
         return acc + cur / OR_M;
     }, 0)
     if (isValidOfPredictProfitRatio) {
         PredictProfitRatio = (sumOFProfitRatio / 4);
-        log("預估稅後淨利率: " + PredictProfitRatio.toFixed(4));
+        log(`預估稅後淨利率: ${PredictProfitRatio.toFixed(4)}   (過去四季[${tempProfitRatio}])`);
     } else {
         log(`預估稅後淨利率無法預測: sumOFProfitRatio ${sumOFProfitRatio.toFixed(2)} `);
     }
@@ -212,7 +215,7 @@ module.exports.calculate = (data) => {
                   =(過去的營收×預估的營收年增率×預估稅後淨後率)÷股本×10
            */
         PredictEPS = (PredictedEarning * PredictProfitRatio * 100 / Capital * 10).toFixed(3);
-        log(`預估EPS: ${PredictEPS} (過去兩年PES=[${EPSYear}])`);
+        log(`預估EPS: ${PredictEPS}    (過去兩年PES=[${EPSYear}])`);
 
         /*6. 預估股價高低落點*/
         PredictHighestPrice = PredictEPS * PredictPE[0];
