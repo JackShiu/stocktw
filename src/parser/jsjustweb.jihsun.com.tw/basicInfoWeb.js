@@ -5,6 +5,7 @@ const { parseValue } = require("../util/util.js");
 
 module.exports.extractBasicInfo = ($, option) => {
     const {DBG} = option || false;
+    let PER_YEAR = [];
     let H_PER = [];
     let L_PER = [];
     let currentStartStockValue; //Current start Stock Value
@@ -42,6 +43,12 @@ module.exports.extractBasicInfo = ($, option) => {
                 });
                 if (DBG) console.log("最低本益比:", L_PER);
                 break;
+            case "年度":
+                $(e).parent().children('td').each((index, node) => {
+                    if (index != 0 && index < 6) //first is string and extract six year value
+                        PER_YEAR.push(parseValue($(node).text()));
+                });
+            break;
             case "營收比重":
                 ProductType = ($(e).next().text());
                 if (DBG) console.log("營收比重:", ProductType);
@@ -65,6 +72,7 @@ module.exports.extractBasicInfo = ($, option) => {
         currentPERValue,
         H_PER,
         L_PER,
+        PER_YEAR,
         stockName,
         ProductType
     });

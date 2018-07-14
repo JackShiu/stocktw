@@ -1,5 +1,4 @@
 
-
 //calculate value
 let predictProfitMonthYoY = -1;
 let PredictedEarning = -1;
@@ -19,7 +18,9 @@ let isValidOfPEAverage;
 let isValidOfpredictProfitMonthYoY;
 let isValidOfPredictProfitRatio;
 let isValidCompluted = false;
-let displayString = [];
+let rank = -1;
+
+// let displayString = [];
 
 const log = (val, hide) => {
     displayString.push(val + "\n");
@@ -35,13 +36,6 @@ const getPEAverage = (data, limit) => {
     let MinPE;
     let PEList = [];
     let threshold = 2;
-
-    //要有六比資料才開始計算，雖然這個因該不會跑到
-    // if(data.length <5) {
-    // 	isValidOfPEAverage=false;
-    // 	return -1;
-    // }
-
     data.map((val, i) => {
         // console.log(i,val)	
         //有負值，就不繼續計算
@@ -99,170 +93,200 @@ const getPEAverage = (data, limit) => {
     return newList.reduce((acc, val) => acc + val) / newList.length
 }
 
-/* ===== Calculate ==== */
-module.exports.calculate = (data) => {
-    //存取資料
-    const {
-        /* web 1 基本資料 */
-        BasicInfoWeb, //基本資料 網址
-        stockID, //股票名稱
-        currentStartStockValue,// 開盤價 (int)
-        currentStockValue,// 收盤價 (int)
-        currentPERValue,// 當前本益比 (int)
-        H_PER,//最高本益比 (array)(6 years)
-        L_PER,//最低本益比 (array)(6 years)
-        stockName,//股票名稱 (string)
-        ProductType,//營收比重 (string)
 
-        /* web 2 營收明細(月) */
-        RevenueWeb_M, // 營收明細 (月) 網址
-        profitMonthYoY,//月營收年增率(objec {value, month}) (6 month)
 
-        /* web 3 經營績效(季) */
-        PerformanceWeb_S,//經營績效(季) 網址
-        OperatingRevenueMonth,//營業收入 (array) (4 season)
-        NetProfit,//稅後淨利 (array) (4 season)
-        Capital,// 加權平均股數 (int) (last season) <- TODO: this may not be true
-
-        /* web 4 經營績效(年) */
-        PerformanceWeb_Y,//經營績效(年) 網址
-        YearEarningLastY,//(去年)營業收入 (int)
-        EPSYear,//稅後每股盈餘 (array) (過去兩年)
-        /* other options */
-        DBG
-    } = data;
-    displayString =[];
+module.exports.emptyReturn = clearAll = () => {
+    isValidOfPEAverage = false ;
+    isValidOfpredictProfitMonthYoY = false ;
+    isValidOfPredictProfitRatio = false ;
+    predictProfitMonthYoY = -1;
+    PredictedEarning = -1;
+    PredictProfitRatio = -1;
+    PredictEPS = -1;
+    PredictPE = [-1, -1];
+    EPSYoY = -1;
+    PredictHighestPrice = -1;
+    PredictLowestPrice = -1;
+    PredictEarningRatio = -1;
+    PredictLossRatio = -1;
+    RiskEarningRatio = -1;
+    PEG = -1;
     isValidCompluted = false;
-    if (DBG) console.log(`=======開始計算========`)
-    if (!DBG) log(`=======[${stockID}]========`, DBG)
-    log(`股票：${stockName}`);
-    log(`營收比重：${ProductType}`);
-    log(`基本資料網站: ${BasicInfoWeb}`);
-    log(`收盤價: ${currentStockValue}`);
+    rank = 0;
 
-    /* 1. 預估本益比區間
-    */
+    return {
+        isValidOfPEAverage,
+        PredictPE,
+        isValidOfpredictProfitMonthYoY,
+        predictProfitMonthYoY,
+        PredictedEarning,
+        isValidOfPredictProfitRatio,
+        PredictProfitRatio,
+        PredictEPS,
+        PredictHighestPrice,
+        PredictLowestPrice,
+        PredictEarningRatio,
+        PredictLossRatio,
+        RiskEarningRatio,
+        EPSYoY,
+        PEG,
+        isValidCompluted,
+        rank
+    }
+}
+
+
+// ============================
+// ============================
+module.exports.calculate_v1 = data => {
+    clearAll();
+
+    /* ===============
+       1. 預估本益比區間
+    ================= */
     isValidOfPEAverage = true;
-    const AvgMaxPE = getPEAverage(H_PER, "MAX");
-    const AvgMinPE = getPEAverage(L_PER, "MIN");
+    let H_PER = data.o_PE.o_Yearly.a_max;
+    let L_PER = data.o_PE.o_Yearly.a_min;
+    const a_AvgMaxPE = getPEAverage(H_PER, "MAX");
+    const a_AvgMinPE = getPEAverage(L_PER, "MIN");
+    // let a_PredictPE;
     if (isValidOfPEAverage) {
-        // console.log(AvgMaxPE,AvgMinPE);
+        const s_LastMaxPE = data.o_PE.o_Yearly.a_max[0];
+        const s_LastMinPE = data.o_PE.o_Yearly.a_min[0];
         //平均值要跟最新得數值比大小，都取最小值
-        PredictPE = [Math.min(AvgMaxPE, H_PER[0])
-            , Math.min(AvgMinPE, L_PER[0])];
-        log(`預估本益比: ${PredictPE[0].toFixed(2)}~${PredictPE[1].toFixed(2)}`);
-        log(`過去本益比區間(年): 高:[${H_PER}] 低:[${L_PER}] `);
-    } else {
-        log(`預估本益比(失敗): [${H_PER}] [${L_PER}] `);
+        PredictPE = [Math.min(a_AvgMaxPE, s_LastMaxPE), Math.min(a_AvgMinPE, s_LastMinPE)];
+        // console.log(AvgMaxPE,AvgMinPE);
     }
 
-	/*2. 預估營收年增率
+    /* ===============
+      2. 預估營收年增率
 	  條件：
 		1.近6個月營收年增率不能有負值
 		2."最新的月營收年增率"與這"六個月的平均"，取出最小值當作預估營收年增率
-	*/
+	================= */
     isValidOfpredictProfitMonthYoY = true;
-    let sumOFprofitMonthYoY = profitMonthYoY.value.reduce((acc, cur, i) => {
-        if (cur < 0 && profitMonthYoY.month[i] != "2") isValidOfpredictProfitMonthYoY = false;
-        return acc + cur
-    });
+    let MonthOfChianYear = "107.02";
+    let profitMonthYoY = data.o_OperatingRevenue.o_Monthly.a_YoY;
+    let profitMonthYoY_Month = data.o_OperatingRevenue.o_Monthly.a_month;
+    // console.log(profitMonthYoY);
+    // console.log(profitMonthYoY_Month);
+    let sumOFprofitMonthYoY = profitMonthYoY.reduce((acc, cur, i) => {
+        if ((cur < 0 && profitMonthYoY_Month !== MonthOfChianYear) || !isValidOfpredictProfitMonthYoY) {
+          isValidOfpredictProfitMonthYoY = false;
+          return 0;
+        }
+        return acc + cur;
+    },0);
     if (isValidOfpredictProfitMonthYoY) {
-        let averageOFprofitMonthYoY = (sumOFprofitMonthYoY / 6);
-        if (DBG) console.log("平均營收年增率: " + averageOFprofitMonthYoY.toFixed(2));
-        if (DBG) console.log("最新收年增率: " + profitMonthYoY.value[0].toFixed(2));
-        predictProfitMonthYoY = profitMonthYoY.value[0] < averageOFprofitMonthYoY ? profitMonthYoY.value[0] : averageOFprofitMonthYoY;
-        log(`預估營收年增率: ${predictProfitMonthYoY.toFixed(2)}    (過去六個月 [${profitMonthYoY.value}])`);
-    } else {
-        log("預估營收年增率(有負值,空值): (近六個月年營收)" + profitMonthYoY.value);
+        let averageOFprofitMonthYoY = sumOFprofitMonthYoY / 6;
+        predictProfitMonthYoY = Math.min(profitMonthYoY[0], averageOFprofitMonthYoY);
     }
 
-	/*3. 預估營收
+    /* ===============
+      3. 預估營收
 	  算法： 去年營收*(1+預估營收年增率/100 )
-	*/
+    ================= */
+    let s_YearEarning_Y = data.o_OperatingRevenue.o_Yearly.a_value[0];
+    // console.log(s_YearEarning_Y);
     if (isValidOfpredictProfitMonthYoY) {
-        PredictedEarning = (YearEarningLastY * (1 + predictProfitMonthYoY / 100));
-        log("預估營收: " + PredictedEarning.toFixed(2));
-    } else {
-        log(`無法預估營收: LastYearEarning ${YearEarningLastY}`);
+        PredictedEarning = s_YearEarning_Y * (1 + predictProfitMonthYoY / 100);
     }
 
-	/*4. 預估稅後淨利率
+    /* ===============
+      4. 預估稅後淨利率
 	  算法: 過去4季(稅後淨利/營業收入)的平均
-	*/
+	================= */
     isValidOfPredictProfitRatio = true;
-    let tempProfitRatio = [];
-    let sumOFProfitRatio = NetProfit.reduce((acc, cur, i) => {
-        let OR_M = OperatingRevenueMonth[i];
+    let a_NetProfit_afterTax = data.o_NetIncome.o_Quarterly.a_afterTax.slice(0, 4); //抓四季就好
+    let OperatingRevenueQuarterly = data.o_OperatingRevenue.o_Quarterly.a_value;
+    let sumOFProfitRatio = a_NetProfit_afterTax.reduce((acc, cur, i) => {
+        let OR_M = OperatingRevenueQuarterly[i];
         if (cur < 0 || OR_M < 0) isValidOfPredictProfitRatio = false;
         // console.log(acc,cur,OR_M,cur/OR_M,i);
-        tempProfitRatio.push((cur / OR_M).toFixed(3));
         return acc + cur / OR_M;
-    }, 0)
+    }, 0);
     if (isValidOfPredictProfitRatio) {
-        PredictProfitRatio = (sumOFProfitRatio / 4);
-        log(`預估稅後淨利率: ${PredictProfitRatio.toFixed(4)}   (過去四季[${tempProfitRatio}])`);
-    } else {
-        log(`預估稅後淨利率無法預測: sumOFProfitRatio ${sumOFProfitRatio.toFixed(2)} `);
+      PredictProfitRatio = sumOFProfitRatio / 4;
     }
 
     if (isValidOfPEAverage
         && isValidOfpredictProfitMonthYoY
-        && isValidOfPredictProfitRatio
-        && Capital
-    ) {
-        /*5. 預估EPS
+        && isValidOfPredictProfitRatio ) {
+        /* ===============
+          5. 預估EPS
            算法: (預測營收 * 預估稅後淨後率 * 100)÷股本×10
                   =(過去的營收×預估的營收年增率×預估稅後淨後率)÷股本×10
-           */
-        PredictEPS = (PredictedEarning * PredictProfitRatio * 100 / Capital * 10).toFixed(3);
-        log(`預估EPS: ${PredictEPS}    (過去兩年PES=[${EPSYear}])`);
+        ================= */
+        let Capital = data.o_Capital.o_Quarterly.a_value[0];
+        PredictEPS = (PredictedEarning * PredictProfitRatio * 100 / Capital * 10);
 
-        /*6. 預估股價高低落點*/
-        PredictHighestPrice = PredictEPS * PredictPE[0];
-        PredictLowestPrice = PredictEPS * PredictPE[1];
-        log(`預估股價高低落點: ${PredictHighestPrice.toFixed(2)}~${PredictLowestPrice.toFixed(2)} ,(當前:${currentStockValue})`);
+        /* ===============
+          6. 預估股價高低落點
+        ================= */
+        PredictHighestPrice = PredictEPS * PredictPE[0]; //Max
+        PredictLowestPrice = PredictEPS * PredictPE[1]; //Min
 
-        /*7. 預估報酬率*/
+        /* ===============
+          7. 預估報酬率
+        ================= */
+        let currentStockValue = data.o_Price.s_closingPrice;
         PredictEarningRatio = (PredictHighestPrice - currentStockValue) / currentStockValue;
-        log(`預估報酬率: ${PredictEarningRatio.toFixed(2)}`);
 
-        /*8. 預估風險*/
+        /* ===============
+          8. 預估風險
+        ================= */
         PredictLossRatio = (currentStockValue - PredictLowestPrice) / currentStockValue;
-        log(`預估風險: ${PredictLossRatio.toFixed(2)}`);
 
-        /*9. 風險報酬倍數*/
+        /* ===============
+          9. 風險報酬倍數
+        ================= */
         if (PredictLossRatio < 0) {
-            //小於0表示沒風險，所以以一個很小的非零數值取代
-            RiskEarningRatio = Math.abs(PredictEarningRatio / 0.0001);
+          //小於0表示沒風險，所以以一個很小的非零數值取代
+          RiskEarningRatio = Math.abs(PredictEarningRatio / 0.0001);
         } else {
-            RiskEarningRatio = Math.abs(PredictEarningRatio / PredictLossRatio);
+          RiskEarningRatio = Math.abs(PredictEarningRatio / PredictLossRatio);
         }
 
-        log(`風險報酬倍數: ${RiskEarningRatio.toFixed(2)}`);
-
-        /*10. 計算過去兩年EPS的年增率
+        /* ===============
+          10. 計算過去兩年EPS的年增率
              算法： 去年/前年 -1
-           */
+        ================= */
+        let EPSYear = data.o_EPS.o_Yearly.a_value;
         EPSYoY = EPSYear[0] / EPSYear[1] - 1;
 
-        /*11. 計算PEG
+        /* ===============
+          11. 計算PEG
              算法： 本益比 / EPS年增率
              概念：EPS=稅後淨利除以股本乘以10，納入了股本因素
                   畢竟股本如果膨脹會有稀釋效果，用EPS成長率更能代表公司的獲利成長情況。
              判斷：台股PEG能降到0.4以下才稱得上具有股價低估的投資價值
-           */
+        ================= */
         PEG = currentStockValue / PredictEPS / EPSYoY / 100;
-        log(`PEG : ${PEG.toFixed(2)} `);
 
+        // finally setup boolean and rank
         isValidCompluted = true;
-    } else {
-        /*數值不正確，無法進行計算*/
-        log("(有)數值不正確，無法進行計算 !!!");
+        rank = RiskEarningRatio;
     }
-    log("\n");
-    return {
-        valid: isValidCompluted,
-        data: displayString,
-        riskEarningRatio: RiskEarningRatio
-    };
+    let response = {
+        isValidOfPEAverage,
+        PredictPE,
+        isValidOfpredictProfitMonthYoY,
+        predictProfitMonthYoY,
+        PredictedEarning,
+        isValidOfPredictProfitRatio,
+        PredictProfitRatio,
+        PredictEPS,
+        PredictHighestPrice,
+        PredictLowestPrice,
+        PredictEarningRatio,
+        PredictLossRatio,
+        RiskEarningRatio,
+        EPSYoY,
+        PEG,
+        isValidCompluted,
+        rank
+    }
+    // console.log(response)
+    return response;
 }
+
