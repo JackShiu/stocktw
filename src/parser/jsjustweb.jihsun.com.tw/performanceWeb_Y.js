@@ -14,7 +14,7 @@ module.exports.extractPerformance_Y = ($, option) => {
             YearEarning_Y.push(parseValue(value));
         if (i < 2) {
             EPSYear.push(parseValue(tempEPS));
-            Year.push(parseValue($(e).children('td').eq(0).text()));
+            Year.push(parseValue($(e).children('td').eq(0).text())+1911);
         }
         // console.log(i,parseInt(value));
     });

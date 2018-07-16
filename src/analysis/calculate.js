@@ -30,7 +30,7 @@ const log = (val, hide) => {
 
 
 /*計算本益比(PE)常態分佈平均值*/
-const getPEAverage = (data, limit) => {
+const getPEAverage = (data =[], limit) => {
     let firstValue = -1;
     let MaxPE;
     let MinPE;

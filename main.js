@@ -1,7 +1,7 @@
 var program = require('commander');
 
-const { getTWStockList } = require("./src/parser/isin.twse.com.tw/main");
-const {  evaluate_v2 } = require("./src/analysis/main");
+const { getStockIDList } = require("./src/parser/isin.twse.com.tw/main");
+const {  evaluate } = require("./src/analysis/main");
 
 let DBG =false;
 
@@ -32,13 +32,13 @@ let DBG =false;
 	// if (options.save) console.log('  - save');
 
 	//判斷有stockID 那是不是有效的股票
-	const stockList = await getTWStockList();
+	const stockList = await getStockIDList(options);
 	if(stockID != undefined && stockList.indexOf(parseInt(stockID))===-1){
 		console.log(`沒有輸入的stock [${stockID}]`);
 		return -1;
 	}
 
 	//呼叫評估函數
-	evaluate_v2(stockID,options);
+	evaluate(stockID,options);
 
 })();

@@ -14,8 +14,8 @@ module.exports.extractPerformance_S = ($, option) => {
     $("#oMainTable tr").not("#oScrollHead").not("#oScrollMenu").each((i, e) => {
         if (i < 4) {//only exact the four latest value
             // var [year, Q] = $(e).children('td').eq(0).text().split(".");
-            var Q = $(e).children('td').eq(0).text(); //107.1Q
-            Quarter.push(Q)
+            var [Y,Q] = $(e).children('td').eq(0).text().split('.'); //107.1Q
+            Quarter.push(`${parseValue(Y) + 1911}.${Q}`); // 2018.1Q
             OperatingRevenueQuarterly.push(parseValue($(e).children('td').eq(2).text()));
             NetProfit_afterTax.push(parseValue($(e).children('td').eq(4).text()));
             NetProfit_beforTax.push(parseValue($(e).children('td').eq(3).text()));

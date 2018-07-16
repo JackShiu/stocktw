@@ -5,6 +5,39 @@ const { extractRevenueMonthly} = require("./revenueWeb_M");
 const { extractPerformance_S} = require("./performanceWeb_S");
 const { extractPerformance_Y} = require("./performanceWeb_Y");
 
+module.exports.getWebAddress = stockID => {
+    const BasicInfoWeb = `http://jsjustweb.jihsun.com.tw/z/zc/zca/zca_${stockID}.djhtm`;
+    const RevenueWeb_M = `http://jsjustweb.jihsun.com.tw/z/zc/zch/zch_${stockID}.djhtm`;
+    const PerformanceWeb_S = `http://jsjustweb.jihsun.com.tw/z/zc/zcd_${stockID}.djhtm`;
+    const PerformanceWeb_Y = `http://jsjustweb.jihsun.com.tw/z/zc/zcdj_${stockID}.djhtm`;
+    return {
+        BasicInfoWeb,
+        RevenueWeb_M,
+        PerformanceWeb_S,
+        PerformanceWeb_Y,
+    }
+}
+
+module.exports.getBasicInfoWeb = async(stockID, option) => {
+    const BasicInfoWeb = `http://jsjustweb.jihsun.com.tw/z/zc/zca/zca_${stockID}.djhtm`;
+    return  await queryService(BasicInfoWeb, extractBasicInfo, option);
+}
+
+module.exports.getRevenueWeb_M = async (stockID, option) => {
+    const RevenueWeb_M = `http://jsjustweb.jihsun.com.tw/z/zc/zch/zch_${stockID}.djhtm`;
+    return await queryService(RevenueWeb_M, extractRevenueMonthly, option);
+}
+
+module.exports.getPerformanceWeb_S = async (stockID, option) => {
+    const PerformanceWeb_S = `http://jsjustweb.jihsun.com.tw/z/zc/zcd_${stockID}.djhtm`;
+    return await queryService(PerformanceWeb_S, extractPerformance_S, option);
+}
+
+module.exports.getPerformanceWeb_Y = async (stockID, option) => {
+    const PerformanceWeb_Y = `http://jsjustweb.jihsun.com.tw/z/zc/zcdj_${stockID}.djhtm`;
+    return await queryService(PerformanceWeb_Y, extractPerformance_Y, option);
+}
+
 /*
 parsing four page from http://jsjustweb.jihsun.com.tw
 
@@ -41,38 +74,3 @@ module.exports.getAllStockData = async (stockID, option) => {
     //console.log(data)
     return data;
 };
-
-module.exports.getWebAddress = stockID => {
-    const BasicInfoWeb = `http://jsjustweb.jihsun.com.tw/z/zc/zca/zca_${stockID}.djhtm`;
-    const RevenueWeb_M = `http://jsjustweb.jihsun.com.tw/z/zc/zch/zch_${stockID}.djhtm`;
-    const PerformanceWeb_S = `http://jsjustweb.jihsun.com.tw/z/zc/zcd_${stockID}.djhtm`;
-    const PerformanceWeb_Y = `http://jsjustweb.jihsun.com.tw/z/zc/zcdj_${stockID}.djhtm`;
-    return {
-        BasicInfoWeb,
-        RevenueWeb_M,
-        PerformanceWeb_S,
-        PerformanceWeb_Y,
-    }
-}
-
-module.exports.getBasicInfoWeb = async(stockID, option) => {
-    const BasicInfoWeb = `http://jsjustweb.jihsun.com.tw/z/zc/zca/zca_${stockID}.djhtm`;
-    return  await queryService(BasicInfoWeb, extractBasicInfo, option);
-}
-
-module.exports.getRevenueWeb_M = async (stockID, option) => {
-    const RevenueWeb_M = `http://jsjustweb.jihsun.com.tw/z/zc/zch/zch_${stockID}.djhtm`;
-    return await queryService(RevenueWeb_M, extractRevenueMonthly, option);
-}
-
-module.exports.getPerformanceWeb_S = async (stockID, option) => {
-    const PerformanceWeb_S = `http://jsjustweb.jihsun.com.tw/z/zc/zcd_${stockID}.djhtm`;
-    return await queryService(PerformanceWeb_S, extractPerformance_S, option);
-}
-
-module.exports.getPerformanceWeb_Y = async (stockID, option) => {
-    const PerformanceWeb_Y = `http://jsjustweb.jihsun.com.tw/z/zc/zcdj_${stockID}.djhtm`;
-    return await queryService(PerformanceWeb_Y, extractPerformance_Y, option);
-}
-
-

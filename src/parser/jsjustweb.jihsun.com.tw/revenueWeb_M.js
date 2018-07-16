@@ -5,17 +5,16 @@ const { parseValue } = require("../util/util.js");
 
 module.exports.extractRevenueMonthly = ($, option) => {
     const { DBG } = option || false;
-    let profitMonthYoY = {};
-    profitMonthYoY.value = [];
-    profitMonthYoY.month = [];
+    let profitMonthYoY =[];
+    let monthV = []
     profitMonthValue = [];
     $("#oMainTable tr").not("#oScrollHead").not("#oScrollMenu").each((i, e) => {
-        var [year, month] = $(e).children('td').eq(0).text().split("/");
-        var month = $(e).children('td').eq(0).text().split("/").join(".");
+        //var month = $(e).children('td').eq(0).text().split("/");
+        var [Y,M] = $(e).children('td').eq(0).text().split("/");//107-07
         var value = $(e).children('td').eq(4).text();
         if (i < 6) { //only exact the six latest value
-            profitMonthYoY.value.push(parseValue(value));
-            profitMonthYoY.month.push(parseValue(month));
+            profitMonthYoY.push(parseValue(value));
+            monthV.push(`${parseValue(Y) + 1911}.${M}`);//2018.07
             profitMonthValue.push(parseValue($(e).children('td').eq(1).text())); //單位: 千元
         }
         // console.log(i,parseValue(value));
@@ -23,6 +22,7 @@ module.exports.extractRevenueMonthly = ($, option) => {
     if (DBG) console.log("年增率(%):", profitMonthYoY);
     return ({
         profitMonthYoY,
-        profitMonthValue
+        profitMonthValue,
+        month: monthV
      });
 }
