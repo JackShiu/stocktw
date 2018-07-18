@@ -181,7 +181,6 @@ let estimate = async (stockID, options) => {
         if (!o_currentData.s_Name){
             console.log("資料不存在")
         }
-        dataUpdate =true;
         // 抓取基本資料
         if (forceUpdateAll || !forceNotToUpdateAll){
             let o_BasicInfo = await getBasicInfoWeb(stockID, options);
@@ -256,8 +255,8 @@ let estimate = async (stockID, options) => {
         // 顯示資料到terminal上
         console.log(printString)
         // 儲存 parserdata
+		dataUpdate = isBasicUpdated | isMonthlyUpdated | isQuarterlyUpdated |isYearlyUpdated
         if(dataUpdate)
-            // console.log(o_currentData);
             updateStockInfoToDB(stockID, o_currentData)
         // 回傳資料
         return {
@@ -287,8 +286,6 @@ module.exports.evaluate = async (stockID, options) => {
         const funcs = a_AllStock.map(
             tempStockID => async () => {
                 let res = await estimate(tempStockID, options);
-                //設定延遲時間
-                // await delay(parseInt(60 * Math.random()))
                 return Promise.resolve(res);
 
         });
@@ -303,7 +300,6 @@ module.exports.evaluate = async (stockID, options) => {
     writeHistorcialDataToFile();
     //儲存計算後的資料
     fileName = `${dateNow}-${stockID || 'all'}.txt`;
-
+	//儲存資料到DB
     storeStockInfo(fileName, printString, options.save)
-    console.log(getLastQuarter());
 }
