@@ -3,7 +3,7 @@ let moment =require("moment");
 const { storeStockInfo } = require("../fs/fs");
 const { parseValue } = require("../parser/util/util");
 
-const { calculate_v1, emptyReturn } = require("./calculate");
+const { calculate, reset } = require("./calculate");
 const {
     getWebAddress,
     getBasicInfoWeb,
@@ -13,6 +13,8 @@ const {
 } = require("../parser/jsjustweb.jihsun.com.tw/main");
 const { getTWStockList, getStockIDList } = require("../parser/isin.twse.com.tw/main");
 const { saveData, readJASON, writeJASON } = require("../fs/fs");
+
+const {stockInfo} = require("./stockInfo");
 
 /* promise 序列化函數 */
 const promiseSerial = funcs =>
@@ -45,7 +47,8 @@ const getLastMonth =()=>{
 const getLastQuarter = () => {
     return moment()
       .subtract(1, "quarter")
-      .subtract(2, "month") //往前在推2個月
+    //   .subtract(1, "month") //往前在推1個月
+    //   .subtract(10, "day") //往前在推又15天
       .format("YYYY.Q[Q]");//2018.2Q
 
 }
@@ -67,218 +70,142 @@ const updateStockInfoToDB = (stockID,storeData) => {
     o_ParsedStockInfoObject[stockID] = storeData;
 }
 
-let getEmptystockInfo = () => ({
-    s_Name: null,
-    s_ProductType: null,
-    o_UpdateTime: {
-        s_month: null, //2018-08
-        s_quarter: null, //2018-Q1
-        s_year: null //2018
-    },
-    o_Price: {
-        s_closingPrice: null,
-        s_maxInYear: null,
-        s_minInYear: null
-    },
-    o_Capital: {
-        o_Quarterly: {
-            a_season: [],
-            a_value: []
-        }
-    },
-    o_PE: {
-        s_current: null,
-        s_peerToEarth_ratio :null,
-        o_Yearly: {
-            a_year: [],
-            a_max: [],
-            a_min: []
-        }
-    },
-    o_EPS: {
-        o_Quarterly: {
-            a_season: [],
-            a_afterTax: [],
-            a_beforeTax: [],
-        },
-        o_Yearly: {
-            a_year: [],
-            a_value: []
-        },
-        s_YoY: null
-    },
-    o_OperatingRevenue: {
-        o_Monthly: {
-            a_month: [],
-            a_value: [],
-            a_MoM: [],
-            a_YoY: []
-        },
-        o_Quarterly: {
-            a_season: [],
-            a_value: []
-        },
-        o_Yearly: {
-            a_year: [],
-            a_value: []
-        }
-    },
-    a_OperatingCost: [],
-    a_OperatingIncome: [],
-    a_OperatingExpend: [],
-    o_NetIncome: {
-        o_Quarterly: {
-            a_season: [],
-            a_afterTax: [],
-            a_beforeTax: []
-        },
-        o_Yearly: {
-            a_year: [],
-            a_afterTax: [],
-            a_beforeTax: []
-        }
-    }
-});
-
-let getDisplayString = (stockID = "NULL", o_WebAddress = {}, pureData ={}, calData = {}) =>
+let getDisplay = (stockID = "NULL", o_WebAddress = {}, info ={}, cal = {}) =>
 `=======[${stockID}]========
-股票：${pureData.s_Name}
-營收比重：${pureData.s_ProductType}
+股票：${info.getStockName()}
+營收比重：${info.getProductType()}
 基本資料網站: ${o_WebAddress.BasicInfoWeb}
-收盤價: ${pureData.o_Price.s_closingPrice} (元)
-預估本益比: ${calData.PredictPE[0].toFixed(2)}~${calData.PredictPE[1].toFixed(2)}
-過去本益比區間(年): 高:[${pureData.o_PE.o_Yearly.a_max}] 低:[${pureData.o_PE.o_Yearly.a_min}]
-預估營收年增率: ${calData.predictProfitMonthYoY.toFixed(2)} (%)
-  (過去六個月 [${pureData.o_OperatingRevenue.o_Monthly.a_YoY}])
-預估營收: ${calData.PredictedEarning.toFixed(2)} (百萬)
-預估稅後淨利率: ${(calData.PredictProfitRatio*100).toFixed(2)} (%)
-預估EPS: ${calData.PredictEPS.toFixed(2)} (元) (過去兩年PES=[${pureData.o_EPS.o_Yearly.a_value.slice(0,2)}])
-預估股價高低落點: ${calData.PredictHighestPrice.toFixed(2)}~${calData.PredictLowestPrice.toFixed(2)} ,(當前:${pureData.o_Price.s_closingPrice})
-預估報酬率: ${calData.PredictEarningRatio.toFixed(2)}
-預估風險: ${calData.PredictLossRatio.toFixed(2)}
-風險報酬倍數: ${calData.RiskEarningRatio.toFixed(2)}
-PEG : ${calData.PEG.toFixed(3)}\n
+收盤價: ${info.getPrice('D_closingPrice')} (元)
+預估本益比: ${cal.PredictPE[0].toFixed(2)}~${cal.PredictPE[1].toFixed(2)}
+過去本益比區間(年): 高:[${info.getPE("Y_max").slice(0,6)}] 低:[${info.getPE("Y_min").slice(0,6)}]
+預估營收年增率: ${cal.predictProfitMonthYoY.toFixed(2)} (%)
+  (過去六個月 [${info.getOperatingRevenue('M_YoY').slice(0, 5)}])
+預估營收: ${cal.PredictedEarning.toFixed(2)} (百萬)
+預估稅後淨利率: ${(cal.PredictProfitRatio*100).toFixed(2)} (%)
+預估EPS: ${cal.PredictEPS.toFixed(2)} (元) (過去兩年PES=[${info.getEPS('Y_value').slice(0,2)}])
+預估股價高低落點: ${cal.PredictHighestPrice.toFixed(2)}~${cal.PredictLowestPrice.toFixed(2)} ,(當前:${info.getPrice('D_closingPrice')})
+預估報酬率: ${cal.PredictEarningRatio.toFixed(2)}
+預估風險: ${cal.PredictLossRatio.toFixed(2)}
+風險報酬倍數: ${cal.RiskEarningRatio.toFixed(2)}
+PEG : ${cal.PEG.toFixed(3)}\n
 `;
 
 let estimate = async (stockID, options) => {
     const { DBG } = options || false;
-    let dataUpdate =false;
     let lastUpdateTime = null;
     let forceUpdateAll = false; //強制更新 TODO:
     let forceNotToUpdateAll = false; //強制不更新 TODO:
-    let isBasicUpdated = false;
-    let isMonthlyUpdated = false;
-    let isQuarterlyUpdated = false;
-    let isYearlyUpdated = false;
-    let o_WebAddress = await getWebAddress(stockID);
+    let is_D_Update = false;
+    let is_M_Update = false;
+    let is_Q_Update = false;
+    let is_Y_Update = false;
+    let calData = reset(); //清空計算的資料
     /*初始結構先看看DB有沒有在，沒有就設定空的結構*/
-    let o_currentData = getDBStockInfo(stockID) || getEmptystockInfo();
-    let calData = emptyReturn();
+    let info = new stockInfo(getDBStockInfo(stockID));
     if (DBG) console.log(`=====開始抓取網路資料:${stockID}====`);
     /*獲取server資料*/
     try {
         /*計算單股各個數值*/
-        if (!o_currentData.s_Name){
-            console.log("資料不存在")
+        if (!info.getStockName()) {
+          console.log("資料不存在");
         }
         // 抓取基本資料
         if (forceUpdateAll || !forceNotToUpdateAll){
-            let o_BasicInfo = await getBasicInfoWeb(stockID, options);
-            await delay(parseInt(60 * Math.random()));
-            o_currentData.s_Name = o_BasicInfo.stockName;
-            o_currentData.s_ProductType = o_BasicInfo.ProductType;
-            o_currentData.o_Price.s_closingPrice = o_BasicInfo.currentStockValue;
-            o_currentData.o_PE.s_current = o_BasicInfo.currentPERValue ;
-            o_currentData.o_PE.o_Yearly.a_year = o_BasicInfo.PER_YEAR;
-            o_currentData.o_PE.o_Yearly.a_max = o_BasicInfo.H_PER;
-            o_currentData.o_PE.o_Yearly.a_min = o_BasicInfo.L_PER;
-            isBasicUpdated = true;
+            let res = await getBasicInfoWeb(stockID, options);
+            await delay(parseInt(30 * Math.random()));
+            info.setStockName(res.s_stockName);
+            info.setProductType(res.s_ProductType);
+            info.setPrice("D_closingPrice", res.s_closingPrice);
+            info.setPE("D_current", res.s_current_PE);
+            info.setPE("Y_max", res.a_H_PER);
+            info.setPE("Y_min", res.a_L_PER);
+            info.setPE("Y_TIME", res.Y_TIME);
+            is_D_Update = true;
         }
 
         // 每月
-        lastUpdateTime = o_currentData.o_UpdateTime.s_month; //2018.07
+        lastUpdateTime = info.getUpdatedTime("M_TIME"); //2018.07
         if ((getLastMonth() !== lastUpdateTime || forceUpdateAll) && !forceNotToUpdateAll) {
-            let o_RevenueWeb_M = await getRevenueWeb_M(stockID, options);
-            await delay(parseInt(60 * Math.random()));
-            o_currentData.o_OperatingRevenue.o_Monthly.a_month = o_RevenueWeb_M.month;
-            o_currentData.o_OperatingRevenue.o_Monthly.a_value = o_RevenueWeb_M.profitMonthValue;
-            o_currentData.o_OperatingRevenue.o_Monthly.a_YoY = o_RevenueWeb_M.profitMonthYoY;
+            let res = await getRevenueWeb_M(stockID, options);
+            await delay(parseInt(30 * Math.random()));
+            info.setOperatingRevenue("M_value", res.a_OperatingRevenue_M);
+            info.setOperatingRevenue("M_YoY", res.a_OperatingRevenue_M_YoY);
+            info.setOperatingRevenue("M_TIME", res.M_TIME);
             // update last updating date
-            o_currentData.o_UpdateTime.s_month = o_RevenueWeb_M.month[0];
-            isMonthlyUpdated = true;
+            info.setUpdatedTime("M_TIME", res.M_TIME[0]);
+            is_M_Update = true;
         }
 
         // 每季
-        lastUpdateTime = o_currentData.o_UpdateTime.s_quarter; //2018.1Q
+        lastUpdateTime = info.getUpdatedTime("Q_TIME"); //2018.1Q
         if ((getLastQuarter() !== lastUpdateTime || forceUpdateAll) && !forceNotToUpdateAll){
-            let o_PerformanceWeb_S = await getPerformanceWeb_S(stockID, options);
-            await delay(parseInt(60 * Math.random()));
-            o_currentData.o_OperatingRevenue.o_Quarterly.a_value = o_PerformanceWeb_S.OperatingRevenueQuarterly;
-            o_currentData.o_NetIncome.o_Quarterly.a_afterTax = o_PerformanceWeb_S.NetProfit_afterTax;
-            o_currentData.o_NetIncome.o_Quarterly.a_beforeTax = o_PerformanceWeb_S.NetProfit_beforTax;
-            o_currentData.o_EPS.o_Quarterly.a_afterTax = o_PerformanceWeb_S.NetProfit_afterTax;
-            o_currentData.o_EPS.o_Quarterly.a_beforeTax = o_PerformanceWeb_S.EPS_beforeTax;
-            o_currentData.o_Capital.o_Quarterly.a_value = o_PerformanceWeb_S.Capital;
-            o_currentData.o_NetIncome.o_Quarterly.a_season = o_PerformanceWeb_S.Quarter;
-            o_currentData.o_EPS.o_Quarterly.a_season = o_PerformanceWeb_S.Quarter;
-            o_currentData.o_Capital.o_Quarterly.a_season = o_PerformanceWeb_S.Quarter;
+            let res = await getPerformanceWeb_S(stockID, options);
+            await delay(parseInt(30 * Math.random()));
+            info.setOperatingRevenue("Q_value", res.a_OperatingRevenue_Q);
+            info.setOperatingRevenue("Q_TIME", res.a_Q_TIME);
+            info.setNetIncome("Q_afterTax", res.a_NetIncome_Q_afterTax);
+            info.setNetIncome("Q_beforeTax", res.a_NetIncome_Q_beforTax);
+            info.setNetIncome("Q_TIME", res.a_Q_TIME);
+            info.setEPS("Q_value", res.a_EPS_Q);
+            info.setEPS("Q_TIME", res.a_Q_TIME);
+            info.setCapital("Q_value", res.a_Capital_Q);
+            info.setCapital("Q_TIME", res.a_Q_TIME);
             // update last updating date
-            o_currentData.o_UpdateTime.s_quarter = o_PerformanceWeb_S.Quarter[0];
-            isQuarterlyUpdated = true;
+            info.setUpdatedTime("Q_TIME", res.Q_TIME[0]);
+            is_Q_Update = true;
         }
 
         // 每年
-        lastUpdateTime = o_currentData.o_UpdateTime.s_year;
+        lastUpdateTime = info.getUpdatedTime("Y_TIME");
         if ((parseInt(getLastYear()) !== lastUpdateTime || forceUpdateAll) && !forceNotToUpdateAll) {
-            let o_PerformanceWeb_Y = await getPerformanceWeb_Y(stockID, options);
+            let res = await getPerformanceWeb_Y(stockID, options);
             await delay(parseInt(60 * Math.random()))
-            o_currentData.o_OperatingRevenue.o_Yearly.a_value = o_PerformanceWeb_Y.YearEarning_Y;
-            o_currentData.o_EPS.o_Yearly.a_value = o_PerformanceWeb_Y.EPSYear;
-            o_currentData.o_OperatingRevenue.o_Yearly.a_year = o_PerformanceWeb_Y.Year;
-            o_currentData.o_EPS.o_Yearly.a_year = o_PerformanceWeb_Y.Year;
+            info.setOperatingRevenue("Y_value", res.a_OperatingRevenue_Y);
+            info.setOperatingRevenue("Y_TIME", res.Y_TIME);
+            info.setEPS("Y_value", res.a_EPS_Y);
+            info.setEPS("Y_TIME", res.Y_TIME);
             // update last updating date
-            o_currentData.o_UpdateTime.s_year = o_PerformanceWeb_Y.Year[0];
-            isYearlyUpdated = true;
+            info.setUpdatedTime("Y_TIME", res.Y_TIME[0]);
+            is_Y_Update = true;
         }
-        calData =  calculate_v1(o_currentData);
+        calData =  calculate(info);
     } catch (e) {
         console.log(`fail at : ${stockID} ${e}`);
         let currentTime = moment().format("MM/DD h:mm:ss");//7/12 23:18:40
         saveData("./out/fail.txt", `${currentTime} {${stockID}} : ${e}\n`, "APPEN");
     } finally {
-        // print data in here - calData
-        let printString = getDisplayString(stockID, o_WebAddress, o_currentData, calData);
-        if(isBasicUpdated) console.log("基本更新")
-        if(isMonthlyUpdated) console.log("月資料更新")
-        if(isQuarterlyUpdated) console.log("季資料更新")
-        if(isYearlyUpdated) console.log("年更新")
+        if(is_D_Update) console.log("基本更新")
+        if(is_M_Update) console.log("月資料更新")
+        if(is_Q_Update) console.log("季資料更新")
+        if(is_Y_Update) console.log("年更新")
         // 顯示資料到terminal上
-        console.log(printString)
+        let o_WebAddress = getWebAddress(stockID);//拿到所有網址
+        let showInfo = getDisplay(stockID, o_WebAddress, info, calData);
+        console.log(showInfo)
         // 儲存 parserdata
-		dataUpdate = isBasicUpdated | isMonthlyUpdated | isQuarterlyUpdated |isYearlyUpdated
-        if(dataUpdate)
-            updateStockInfoToDB(stockID, o_currentData)
+        if (is_D_Update | is_M_Update | is_Q_Update | is_Y_Update)
+            updateStockInfoToDB(stockID, info.export());
         // 回傳資料
         return {
             isValid: calData.isValidCompluted,
             rank: calData.rank,
-            pureData:o_currentData,
+            info,
             calData,
-            printString
+            showInfo
         }
     }
 };
 
 module.exports.evaluate = async (stockID, options) => {
-    let resData ;
-    let printString;
+    let res ;
+    let showInfo;
     // 讀取歷史資料
     readHistorcialDataFromFile();
     // 計算
     if (stockID){
         console.log(`query single stock ${stockID}`);
-        resData = await estimate(stockID, options);
-        printString = resData.printString;
+        res = await estimate(stockID, options);
+        showInfo = res.showInfo;
     } else {
         console.log(`query all stock`);
         // 抓取所有股票
@@ -289,11 +216,11 @@ module.exports.evaluate = async (stockID, options) => {
                 return Promise.resolve(res);
 
         });
-        resData = (await promiseSerial(funcs))
-        printString = resData
+        res = (await promiseSerial(funcs))
+        showInfo = res
           .filter(val => val.isValid)
           .sort((a, b) => b.rank - a.rank)
-          .reduce((acc, cur, i) => acc + `RANK: ${i+1}\n`+cur.printString, "");
+          .reduce((acc, cur, i) => acc + `RANK: ${i+1}\n`+cur.showInfo, "");
     }
 
     //儲存要回來的資料
@@ -301,5 +228,5 @@ module.exports.evaluate = async (stockID, options) => {
     //儲存計算後的資料
     fileName = `${dateNow}-${stockID || 'all'}.txt`;
 	//儲存資料到DB
-    storeStockInfo(fileName, printString, options.save)
+    storeStockInfo(fileName, showInfo, options.save)
 }

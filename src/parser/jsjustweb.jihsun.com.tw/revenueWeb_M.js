@@ -5,24 +5,22 @@ const { parseValue } = require("../util/util.js");
 
 module.exports.extractRevenueMonthly = ($, option) => {
     const { DBG } = option || false;
-    let profitMonthYoY =[];
-    let monthV = []
-    profitMonthValue = [];
+    let a_OperatingRevenue_M_YoY = [];
+    let M_TIME = []
+    let a_OperatingRevenue_M = [];
     $("#oMainTable tr").not("#oScrollHead").not("#oScrollMenu").each((i, e) => {
-        //var month = $(e).children('td').eq(0).text().split("/");
         var [Y,M] = $(e).children('td').eq(0).text().split("/");//107-07
-        var value = $(e).children('td').eq(4).text();
-        if (i < 6) { //only exact the six latest value
-            profitMonthYoY.push(parseValue(value));
-            monthV.push(`${parseValue(Y) + 1911}.${M}`);//2018.07
-            profitMonthValue.push(parseValue($(e).children('td').eq(1).text())); //單位: 千元
+        if (i < 24) { //only exact the six latest value
+            a_OperatingRevenue_M.push(parseValue($(e).children('td').eq(1).text())); //單位: 千元
+            a_OperatingRevenue_M_YoY.push(parseValue($(e).children('td').eq(4).text()));
+            M_TIME.push(`${parseValue(Y) + 1911}.${M}`);//2018.07
         }
         // console.log(i,parseValue(value));
     });
     if (DBG) console.log("年增率(%):", profitMonthYoY);
     return ({
-        profitMonthYoY,
-        profitMonthValue,
-        month: monthV
+        a_OperatingRevenue_M_YoY,
+        a_OperatingRevenue_M,
+        M_TIME
      });
 }

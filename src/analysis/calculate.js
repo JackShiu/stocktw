@@ -37,7 +37,7 @@ const getPEAverage = (data =[], limit) => {
     let PEList = [];
     let threshold = 2;
     data.map((val, i) => {
-        // console.log(i,val)	
+        // console.log(i,val)
         //有負值，就不繼續計算
         if (val < 0 || !isValidOfPEAverage) {
             isValidOfPEAverage = false;
@@ -95,7 +95,7 @@ const getPEAverage = (data =[], limit) => {
 
 
 
-module.exports.emptyReturn = clearAll = () => {
+module.exports.reset = clearAll = () => {
     isValidOfPEAverage = false ;
     isValidOfpredictProfitMonthYoY = false ;
     isValidOfPredictProfitRatio = false ;
@@ -138,21 +138,21 @@ module.exports.emptyReturn = clearAll = () => {
 
 // ============================
 // ============================
-module.exports.calculate_v1 = data => {
+module.exports.calculate = data => {
     clearAll();
 
     /* ===============
        1. 預估本益比區間
     ================= */
     isValidOfPEAverage = true;
-    let H_PER = data.o_PE.o_Yearly.a_max;
-    let L_PER = data.o_PE.o_Yearly.a_min;
+    let H_PER = data.getPE("Y_max").slice(0, 6);
+    let L_PER = data.getPE("Y_min").slice(0, 6);
     const a_AvgMaxPE = getPEAverage(H_PER, "MAX");
     const a_AvgMinPE = getPEAverage(L_PER, "MIN");
     // let a_PredictPE;
     if (isValidOfPEAverage) {
-        const s_LastMaxPE = data.o_PE.o_Yearly.a_max[0];
-        const s_LastMinPE = data.o_PE.o_Yearly.a_min[0];
+        const s_LastMaxPE = H_PER[0];
+        const s_LastMinPE = L_PER[0];
         //平均值要跟最新得數值比大小，都取最小值
         PredictPE = [Math.min(a_AvgMaxPE, s_LastMaxPE), Math.min(a_AvgMinPE, s_LastMinPE)];
         // console.log(AvgMaxPE,AvgMinPE);
@@ -166,10 +166,8 @@ module.exports.calculate_v1 = data => {
 	================= */
     isValidOfpredictProfitMonthYoY = true;
     let MonthOfChianYear = "107.02";
-    let profitMonthYoY = data.o_OperatingRevenue.o_Monthly.a_YoY;
-    let profitMonthYoY_Month = data.o_OperatingRevenue.o_Monthly.a_month;
-    // console.log(profitMonthYoY);
-    // console.log(profitMonthYoY_Month);
+    let profitMonthYoY = data.getOperatingRevenue("M_YoY").slice(0, 6);
+    let profitMonthYoY_Month = data.getOperatingRevenue("M_TIME").slice(0, 6);
     let sumOFprofitMonthYoY = profitMonthYoY.reduce((acc, cur, i) => {
         if ((cur < 0 && profitMonthYoY_Month !== MonthOfChianYear) || !isValidOfpredictProfitMonthYoY) {
           isValidOfpredictProfitMonthYoY = false;
@@ -186,7 +184,7 @@ module.exports.calculate_v1 = data => {
       3. 預估營收
 	  算法： 去年營收*(1+預估營收年增率/100 )
     ================= */
-    let s_YearEarning_Y = data.o_OperatingRevenue.o_Yearly.a_value[0];
+    let s_YearEarning_Y = data.getOperatingRevenue("Y_value")[0];
     // console.log(s_YearEarning_Y);
     if (isValidOfpredictProfitMonthYoY) {
         PredictedEarning = s_YearEarning_Y * (1 + predictProfitMonthYoY / 100);
@@ -197,8 +195,8 @@ module.exports.calculate_v1 = data => {
 	  算法: 過去4季(稅後淨利/營業收入)的平均
 	================= */
     isValidOfPredictProfitRatio = true;
-    let a_NetProfit_afterTax = data.o_NetIncome.o_Quarterly.a_afterTax.slice(0, 4); //抓四季就好
-    let OperatingRevenueQuarterly = data.o_OperatingRevenue.o_Quarterly.a_value;
+    let a_NetProfit_afterTax = data.getNetIncome("Q_afterTax").slice(0, 4); //抓四季就好
+    let OperatingRevenueQuarterly = data.getOperatingRevenue("Q_value").slice(0, 4);
     let sumOFProfitRatio = a_NetProfit_afterTax.reduce((acc, cur, i) => {
         let OR_M = OperatingRevenueQuarterly[i];
         if (cur < 0 || OR_M < 0) isValidOfPredictProfitRatio = false;
@@ -217,7 +215,7 @@ module.exports.calculate_v1 = data => {
            算法: (預測營收 * 預估稅後淨後率 * 100)÷股本×10
                   =(過去的營收×預估的營收年增率×預估稅後淨後率)÷股本×10
         ================= */
-        let Capital = data.o_Capital.o_Quarterly.a_value[0];
+        let Capital = data.getCapital("Q_value")[0];
         PredictEPS = (PredictedEarning * PredictProfitRatio * 100 / Capital * 10);
 
         /* ===============
@@ -229,7 +227,7 @@ module.exports.calculate_v1 = data => {
         /* ===============
           7. 預估報酬率
         ================= */
-        let currentStockValue = data.o_Price.s_closingPrice;
+        let currentStockValue = data.getPrice("D_closingPrice");
         PredictEarningRatio = (PredictHighestPrice - currentStockValue) / currentStockValue;
 
         /* ===============
@@ -251,7 +249,7 @@ module.exports.calculate_v1 = data => {
           10. 計算過去兩年EPS的年增率
              算法： 去年/前年 -1
         ================= */
-        let EPSYear = data.o_EPS.o_Yearly.a_value;
+        let EPSYear = data.getEPS("Y_value").slice(0,2);
         EPSYoY = EPSYear[0] / EPSYear[1] - 1;
 
         /* ===============
