@@ -1,7 +1,7 @@
 var program = require('commander');
 
-const { getStockIDList } = require("./src/parser/isin.twse.com.tw/main");
-const {  evaluate } = require("./src/analysis/main");
+const { getStockIDList } = require("./parser/isin.twse.com.tw/main");
+const {  evaluate } = require("./analysis/main");
 
 let DBG =false;
 

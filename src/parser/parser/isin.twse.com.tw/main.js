@@ -46,6 +46,6 @@ module.exports.getTWStockList = getTWStockList = async (option) => {
 
 // 只 回傳股票 ID
 module.exports.getStockIDList = async (option) => {
-    getTWStockList(option);
+    await getTWStockList(option);
     return a_AllStock.map(info => info.ID);
 }
