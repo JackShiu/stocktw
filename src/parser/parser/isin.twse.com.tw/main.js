@@ -4,7 +4,7 @@ const { extractOvertheCounterMarketList} = require("./OvertheCounterMarketList")
 const { queryService } = require("../util/util");
 const { readJASON, writeJASON} = require("../../fs/fs");
 
-const fileName = "src/data/list.jason";
+const fileName = "src/data/list.json";
 const dateNow = moment().format("YYYY-MM");
 let a_AllStock = [];
 

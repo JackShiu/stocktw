@@ -14,7 +14,7 @@ const {
 const { getTWStockList, getStockIDList } = require("../parser/isin.twse.com.tw/main");
 const { saveData, readJASON, writeJASON } = require("../fs/fs");
 
-const {stockInfo} = require("./stockInfo");
+const {stockInfo} = require("../../interface/stockInfo");
 
 /* promise 序列化函數 */
 const promiseSerial = funcs =>
@@ -53,7 +53,7 @@ const getLastQuarter = () => {
 
 }
 
-const historcialDataFile = "src/data/all_stock_value.jason";
+const historcialDataFile = "src/data/all_stock_value.json";
 let o_ParsedStockInfoObject = {};
 
 const readHistorcialDataFromFile = () => {
