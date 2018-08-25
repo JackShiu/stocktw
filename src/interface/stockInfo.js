@@ -1,4 +1,59 @@
 
+module.exports.getEmptyStockInfo = getEmptyStockInfo = function () {
+    return ({
+        s_Name: null,
+        s_ProductType: null,
+        o_UpdateTime: {
+            s_M_TIME: null, //2018-08
+            s_Q_TIME: null, //2018-Q1
+            s_Y_TIME: null //2018
+        },
+        o_Price: {
+            s_closingPrice: null,
+            s_maxInYear: null,
+            s_minInYear: null
+        },
+        o_Capital: {
+            a_Q_value: [],
+            a_Q_TIME: []
+        },
+        o_PE: {
+            s_current: null,
+            a_Y_max: [],
+            a_Y_min: [],
+            a_Y_TIME: []
+        },
+        o_EPS: {
+            a_M_value: [],
+            a_Q_value: [],
+            a_Y_value: [],
+            a_M_TIME: [],
+            a_Q_TIME: [],
+            a_Y_TIME: []
+        },
+        o_OperatingRevenue: {
+            a_M_value: [],
+            a_Q_value: [],
+            a_Y_value: [],
+            a_M_MoM: [],
+            a_M_YoY: [],
+            a_M_TIME: [],
+            a_Q_TIME: [],
+            a_Y_TIME: []
+        },
+        a_OperatingCost: [],
+        a_OperatingIncome: [],
+        a_OperatingExpend: [],
+        o_NetIncome: {
+            a_Q_afterTax: [],
+            a_Q_beforeTax: [],
+            a_Y_afterTax: [],
+            a_Y_beforeTax: [],
+            a_Q_TIME: [],
+            a_Y_TIME: []
+        }
+    })
+}
 
 function stockInfo(val){
     this.info = val || getEmptyStockInfo();
@@ -274,59 +329,61 @@ stockInfo.prototype.getNetIncome = function(type) {
     }
 };
 
-module.exports.getEmptyStockInfo = getEmptyStockInfo = function (){
-    return ({
-        s_Name: null,
-        s_ProductType: null,
-        o_UpdateTime: {
-            s_M_TIME: null, //2018-08
-            s_Q_TIME: null, //2018-Q1
-            s_Y_TIME: null //2018
-        },
-        o_Price: {
-            s_closingPrice: null,
-            s_maxInYear: null,
-            s_minInYear: null
-        },
-        o_Capital: {
-            a_Q_value: [],
-            a_Q_TIME: []
-        },
-        o_PE: {
-            s_current: null,
-            a_Y_max: [],
-            a_Y_min: [],
-            a_Y_TIME: []
-        },
-        o_EPS: {
-            a_M_value: [],
-            a_Q_value: [],
-            a_Y_value: [],
-            a_M_TIME: [],
-            a_Q_TIME: [],
-            a_Y_TIME: []
-        },
-        o_OperatingRevenue: {
-            a_M_value: [],
-            a_Q_value: [],
-            a_Y_value: [],
-            a_M_MoM: [],
-            a_M_YoY: [],
-            a_M_TIME: [],
-            a_Q_TIME: [],
-            a_Y_TIME: []
-        },
-        a_OperatingCost: [],
-        a_OperatingIncome: [],
-        a_OperatingExpend: [],
-        o_NetIncome: {
-            a_Q_afterTax: [],
-            a_Q_beforeTax: [],
-            a_Y_afterTax: [],
-            a_Y_beforeTax: [],
-            a_Q_TIME: [],
-            a_Y_TIME: []
-        }
-    })
+
+/*---------------------------------*/
+/*      Basic Stock Info           */
+/*---------------------------------*/
+const getEmptySimpleStockInfo = () => ({
+    ID: null,
+    Name: null,
+    Type: null,
+    Category: null,
+});
+
+stockInfo.prototype.setBasicStockInfo = function (val){
+    this.basic = val || getEmptySimpleStockInfo();
 }
+function simpleStockInfo(val) {
+    this.basic = val || getEmptySimpleStockInfo();
+}
+
+stockInfo.prototype.setBasicID = function (ID) {
+    this.basic.ID = ID;
+}
+
+stockInfo.prototype.getBasicID = function () {
+    return this.basic.ID;
+}
+
+stockInfo.prototype.setBasicName = function (Name) {
+    this.basic.Name = Name;
+}
+
+stockInfo.prototype.getBasicName = function () {
+    return this.basic.Name;
+}
+
+stockInfo.prototype.setBasicType = function (Type) {
+    this.basic.Type = Type;
+}
+
+stockInfo.prototype.getBasicType = function () {
+    return this.basic.Type;
+}
+
+stockInfo.prototype.setBasicCategory = function (Category) {
+    this.basic.Category = Category;
+}
+
+stockInfo.prototype.getBasicCategory = function () {
+    return this.basic.Category;
+}
+
+
+
+
+/*---------------------------------*/
+/* Export                          */
+/*---------------------------------*/
+
 module.exports.stockInfo = stockInfo;
