@@ -70,7 +70,7 @@ const updateStockInfoToDB = (stockID,storeData) => {
     o_ParsedStockInfoObject[stockID] = storeData;
 }
 
-let getDisplay = (stockID = "NULL", o_WebAddress = {}, info ={}, cal = {}) =>
+let getDisplay = (stockID = "NULL", o_WebAddress = {}, info ={}, cal = {}) =>(
 `=======[${stockID}]========
 股票：${info.getStockName()}
 營收比重：${info.getProductType()}
@@ -88,7 +88,7 @@ let getDisplay = (stockID = "NULL", o_WebAddress = {}, info ={}, cal = {}) =>
 預估風險: ${cal.PredictLossRatio.toFixed(2)}
 風險報酬倍數: ${cal.RiskEarningRatio.toFixed(2)}
 PEG : ${cal.PEG.toFixed(3)}\n
-`;
+`);
 
 let estimate = async (stockID, options) => {
     const { DBG } = options || false;
@@ -142,14 +142,14 @@ let estimate = async (stockID, options) => {
             let res = await getPerformanceWeb_S(stockID, options);
             await delay(parseInt(30 * Math.random()));
             info.setOperatingRevenue("Q_value", res.a_OperatingRevenue_Q);
-            info.setOperatingRevenue("Q_TIME", res.a_Q_TIME);
+            info.setOperatingRevenue("Q_TIME", res.Q_TIME);
             info.setNetIncome("Q_afterTax", res.a_NetIncome_Q_afterTax);
             info.setNetIncome("Q_beforeTax", res.a_NetIncome_Q_beforTax);
-            info.setNetIncome("Q_TIME", res.a_Q_TIME);
+            info.setNetIncome("Q_TIME", res.Q_TIME);
             info.setEPS("Q_value", res.a_EPS_Q);
-            info.setEPS("Q_TIME", res.a_Q_TIME);
+            info.setEPS("Q_TIME", res.Q_TIME);
             info.setCapital("Q_value", res.a_Capital_Q);
-            info.setCapital("Q_TIME", res.a_Q_TIME);
+            info.setCapital("Q_TIME", res.Q_TIME);
             // update last updating date
             info.setUpdatedTime("Q_TIME", res.Q_TIME[0]);
             is_Q_Update = true;

@@ -1,0 +1,20 @@
+footer {
+    height: 10rem;
+    background-color: #ddd;
+    text-align: center;
+    margin-top: 5rem;
+    /* padding: 5rem; */
+    position: relative;
+}
+footer div{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%)
+}
+footer p {
+    line-height: 1.8;
+}
+#author {
+    font-weight: 700;
+}

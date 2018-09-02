@@ -1,0 +1,108 @@
+.stock-card {
+    background-color: #eee;
+    max-width: 100rem;
+    margin: 0 auto;
+    border-radius: 5px;
+}
+.stock-card:not(:last-child){
+    margin-bottom: 5rem;
+}
+.stock-card li{
+    list-style: none;
+}
+
+.card-rank {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0 auto .6rem auto;
+    padding: .6rem;
+    background: #888;
+}
+
+.stock-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    padding: 0 0 .6rem .6rem;
+}
+.stock-title::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.stock-title p{
+    float: left;
+    background-color: #fff;
+    height: 3rem;
+    line-height: 3rem;
+    text-align: center;
+}
+.stock-title__id {
+    width: 10%;
+}
+.stock-title__name {
+    width: 40%;
+}
+.stock-title__type {
+    width: 15%;
+}
+.stock-title__category{
+    width: 28.7%;
+}
+.stock-title p:not(:last-child) {
+    margin-right: 1rem;
+}
+
+.stock-description {
+    min-height: 2rem;
+    background-color: #fff;
+    margin: 0 0 .6rem .6rem;
+    padding: 1rem;
+}
+
+.stock-calc {
+    margin: 0 0 .6rem .6rem;
+    padding: 1rem;
+    background-color: #fff;
+    font-size: 1.2rem;
+    line-height: 1.7;
+}
+.info-value {
+    font-size: 1.5rem;
+    background-color: #ccc;
+    padding: 2px;
+}
+.parse-value {
+    margin: 0 0 .6rem .6rem;
+    padding: 1rem;
+    background-color: #fff;
+    line-height: 1.5;
+    overflow: scroll;
+}
+
+.parse-value li:not(:first-child) {
+    margin-top: .3rem;
+}
+
+.table-title {
+    font-weight: 700;
+}
+
+table {
+    border-collapse: collapse;
+    width:100%;
+    overflow: scroll;
+}
+
+table,td {
+    border: 1px solid black;
+    text-align: center;
+}
+
+.table-time {
+    background: #eee;
+    font-weight: 700;
+}
+.value-sm {
+    font-size: .6rem;
+}

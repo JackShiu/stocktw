@@ -46,7 +46,7 @@ module.exports.extractBasicInfo = ($, option) => {
             case "年度":
                 $(e).parent().children('td').each((index, node) => {
                     if (index != 0 ) //first is string and extract six year value
-                        Y_TIME.push(parseValue($(node).text()));
+                        Y_TIME.push(parseValue($(node).text()) + 1911);
                 });
             break;
             case "營收比重":

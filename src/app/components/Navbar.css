@@ -1,0 +1,25 @@
+.scroll-show {
+    background-color: #999;
+    padding: .6rem;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: none;
+    z-index: 1000;
+}
+.scroll__delete-box::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.scroll__search-box {
+    text-align: center;
+}
+.scroll__delete-box div {
+    float: left;
+    font-size: 1.2rem;
+    background-color: #eee;
+    margin: .4rem .4rem 0 0;
+    padding: .4rem .6rem;
+    border-radius: 5px;
+}
