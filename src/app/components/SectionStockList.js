@@ -21,11 +21,11 @@ class SectionStockList extends Component {
                     if (filters && filters.search && filters.search.length > 0) {
                         return filters.search.reduce((acc, cur) => {
                             // console.log("reduce "+cur +" acc: "+ acc);
-                            if (acc == true) {
+                            if (acc === true) {
                                 console.log("already true");
                                 return acc; //if true just return immediately
                             } else {
-                                return item.conj.indexOf(cur) != -1;
+                                return item.conj.indexOf(cur) !== -1;
                             }
                             }, false);
                     }

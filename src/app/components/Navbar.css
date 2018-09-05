@@ -1,21 +1,27 @@
-.scroll-show {
+.nav{
     background-color: #999;
     padding: .6rem;
     position: fixed;
     top: 0;
     width: 100%;
-    display: none;
     z-index: 1000;
 }
+.scroll-hidden {
+    display: none;
+    transition: all 5 ease-in;
+}
+
+.nav__search-box {
+    width: 40rem;
+    margin: 0 auto;
+}
+
 .scroll__delete-box::after {
     content: "";
     display: table;
     clear: both;
 }
-.scroll__search-box {
-    text-align: center;
-}
-.scroll__delete-box div {
+.nav__delete-box div {
     float: left;
     font-size: 1.2rem;
     background-color: #eee;

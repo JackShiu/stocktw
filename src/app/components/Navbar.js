@@ -7,8 +7,8 @@ import SearchBtn from "./SearchBtn";
 class Navbar extends Component {
 
     render() {
-        return <section className="scroll-show">
-            <div className="scroll__search-box">
+        return <section className="nav scroll-hidden">
+            <div className="nav__search-box">
                 <SearchBtn />
             </div>
             {/* <div className="scroll__delete-box">

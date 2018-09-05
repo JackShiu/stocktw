@@ -6,17 +6,21 @@ function filters(state = {}, action) {
     switch (action.type) {
       case "ACTION_SEARCH":
         {
+            let searchValue = action.payload.data
+                .trim()
+                // .replace(/\s +/g, ",")
+                .replace(/\s/g, ",")
+                .split(',')
             return Object.assign({},state,{
-                search: action.payload.data
-                    .trim()
-                    .replace(/\s +/g, ",")
-                    .split(',')
+                search: searchValue,
+                isSearch: searchValue.length > 0
             })
         }
         case "ACTION_SEARCH_CANCEL":
         {
             return Object.assign({},state,{
-                search: []
+                search: [],
+                isSearch: false
             })
         }
       default:

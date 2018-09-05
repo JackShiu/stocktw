@@ -1,3 +1,15 @@
+
+.btn-box {
+
+}
+.btn-box::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.btn-float {
+    float: left;
+}
 .search-text {
     font-size: 1.2rem;
     height: 2rem;
@@ -6,14 +18,55 @@
     border-radius: 3px;
 }
 
-.search-btn {
+.search-btn,
+.search-btn:link,
+.search-btn:visited {
     display: inline-block;
-    height: 2rem;
+    height: 2.2rem;
     width: 5rem;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-family: inherit;
     border: 1px solid #ddd;
     border-radius: 2px;
     background-color: #ddd;
     margin-left: .5rem;
+    outline: none;
+    transition: all .2s ease-in-out;
+
+}
+.search-btn:hover {
+    background-color: #98a2fa;
+    border: 1px solid #98a2fa;
+    box-shadow: 2px 5px 15px rgba(100, 100, 100, .9)
+}
+.search-btn:active {
+    box-shadow: 1px 1px 5px rgba(100, 100, 100, .9)
+}
+
+.search__delete-btn,
+.search__delete-btn:link,
+.search__delete-btn:visited {
+    display: inline-block;
+    font-family: inherit;
+    height: 2.2rem;
+    width: 5rem;
+    font-size: 1rem;
+    color: #fff;
+    border: 1px solid rgb(253, 63, 63);
+    border-radius: 2px;
+    background-color: rgb(253, 54, 54);
+    line-height: 2rem;
+    margin-left: 1rem;
+    outline: none;
+    transition: all .2s ease-in-out;
+}
+
+.search__delete-btn:hover,
+.search__delete-btn:active {
+    background-color: rgb(184, 38, 38);
+    border: 1px solid rgb(184, 38, 38);
+    box-shadow: 2px 5px 15px rgba(100, 100, 100, .9)
+}
+.search__delete-btn:active {
+    box-shadow: 1px 1px 5px rgba(100, 100, 100, .9)
 }

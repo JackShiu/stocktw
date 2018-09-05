@@ -56,5 +56,42 @@
         clear: both;
       }
     </style>
+    <script>
+      window.onload = function () {
+
+          var windowHeight = document.documentElement.clientHeight // 视窗高度-也就是浏览器可视区域高度
+          var threshold = 20 ;// 可以指定提前加载的距离
+          var display = false // 如果到达指定位置，则不再执行打印log
+          let oNav = document.getElementsByClassName("nav")[0];
+          let oTarget = document.getElementsByTagName('header')[0];
+          window.addEventListener('scroll', function () {
+            // getBoundingClientRect()-得到矩形元素的界线
+            // 返回的是一个对象，包含 top, left, right, 和 bottom四个属性值
+            // 大小都是相对于文档视图()浏览器可视区域)左上角计算而来
+            var targetRect = oTarget.getBoundingClientRect()
+
+            //getBoundingClientRect()的top属性-目标元素离视窗顶部的距离
+            var targetTop = targetRect.bottom
+
+            if (display && targetTop > threshold) {
+              display = false;
+              console.log("disapear")
+              // console.log(targetTop)
+              // console.log(windowHeight)
+              oNav.classList.toggle("scroll-hidden");
+            } else if (!display && targetTop < threshold) {
+              // 如果目标元素离视窗顶部的距离小于视窗高度
+              // 则表示已滚动到目标元素位置
+              display = true
+              console.log("display")
+              // console.log(targetTop)
+              // console.log(windowHeight)
+              oNav.classList.toggle("scroll-hidden");
+            } else {
+              return
+            }
+          })
+        }
+    </script>
   </body>
 </html>

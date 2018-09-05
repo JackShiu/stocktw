@@ -7,15 +7,14 @@ import * as actionCreators from '../actions/action';
 
 
 class SearchBtn extends Component {
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.state = {
             inputText: ''
         }
     }
 
     onKeyPress(event){
-        console.log(event.key)
         if(event && event.key === 'Enter'){
             this.onSearch();
         }
@@ -31,24 +30,38 @@ class SearchBtn extends Component {
             });
         }
     }
+    onDelete(){
+        this.props.onSearchCancel &&
+            this.props.onSearchCancel();
+        this.setState({
+            inputText: ''
+        });
+    }
     updateInputText(event){
-        console.log(event.target.value);
+        // console.log(event.target.value);
         this.setState({
             inputText: event.target.value
         })
     }
 
     render(){
-        return <div>
+        const { isSearch = false } = this.props.filters;
+        console.log(isSearch);
+        return <div className="btn-box ">
             <input type="text"
                 value={this.state.inputText}
                 onChange={(event) => this.updateInputText(event)}
                 onKeyPress={(event) => this.onKeyPress(event)}
                 // onKeyPress={(event) => this.onKeyPress(event)}
-                className="search-text" />
+                className="search-text btn-float" />
             <input type="submit"
                 onClick={() => this.onSearch()}
-                value="搜尋" className="search-btn" />
+                value="搜尋" className="search-btn btn-float" />
+            <input type="button" className="btn-float search__delete-btn"
+                value="刪除搜尋"
+                style={isSearch ?{}: {opacity:0}}
+                onClick={() => this.onDelete()}
+                 />
           </div>;
     }
 }

@@ -121,8 +121,8 @@ const numberWithCommas = (x) => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-let mapToTr = (val) => (
-    <tr
+let mapToTr = (val, key) => (
+    <tr key={key}
         className={
             val
             && val.type
@@ -146,8 +146,8 @@ let mapToTr = (val) => (
 let mapToTable = (val) => (
     <table>
         <tbody>
-            {val.map( item => (
-                mapToTr(item)
+            {val.map( (item, i) => (
+                mapToTr(item, i)
             ))}
         </tbody>
     </table>
