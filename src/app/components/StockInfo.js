@@ -112,7 +112,8 @@ let showCalInfo = ({ cal, info }) => {
                                 //   .join(val.valueJoint)
                                   .reduce((acc, cur,i, array)=>{
                                       if (i !== 0 ) {
-                                          return [ ...acc, val.valueJoint ,cur]
+                                          let comma = val.valueJoint && ',';
+                                          return [...acc, comma ,cur]
                                       }
                                       return [...acc,cur]
                                   },[])
