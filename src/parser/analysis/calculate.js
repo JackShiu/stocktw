@@ -165,18 +165,20 @@ module.exports.calculate = data => {
 		2."最新的月營收年增率"與這"六個月的平均"，取出最小值當作預估營收年增率
 	================= */
     isValidOfpredictProfitMonthYoY = true;
-    let MonthOfChianYear = "107.02";
+    let MonthOfChianYear = "2018.02";
     let profitMonthYoY = data.getOperatingRevenue("M_YoY").slice(0, 6);
     let profitMonthYoY_Month = data.getOperatingRevenue("M_TIME").slice(0, 6);
+    let count = 0;
     let sumOFprofitMonthYoY = profitMonthYoY.reduce((acc, cur, i) => {
         if ((cur < 0 && profitMonthYoY_Month !== MonthOfChianYear) || !isValidOfpredictProfitMonthYoY) {
           isValidOfpredictProfitMonthYoY = false;
-          return 0;
+            return acc;
         }
+        count ++;
         return acc + cur;
     },0);
     if (isValidOfpredictProfitMonthYoY) {
-        let averageOFprofitMonthYoY = sumOFprofitMonthYoY / 6;
+        let averageOFprofitMonthYoY = sumOFprofitMonthYoY / count;
         predictProfitMonthYoY = Math.min(profitMonthYoY[0], averageOFprofitMonthYoY);
     }
 

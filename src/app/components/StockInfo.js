@@ -2,7 +2,11 @@ import React, { Component } from "react";
 import "./StockInfo.css";
 
 let checkValue = num => {
-    if (isNaN(num) || num.length === 0) return num;
+    // if (isNaN(num) || num.length === 0) return num;
+    if(typeof num === 'string') return num;
+    if (isNaN(num)) {
+        return -1;
+    }
     let tmp = num;
     if (num % 1 !== 0) {
         tmp = num.toFixed(2);
@@ -104,8 +108,14 @@ let showCalInfo = ({ cal, info }) => {
                         <span className="info-value">
                             {
                                 val.value instanceof Array ?
-                                  val.value.map( tmp =>checkValue(tmp).toString())
-                                  .join(val.valueJoint)
+                                  val.value.map( tmp =>checkValue(tmp))
+                                //   .join(val.valueJoint)
+                                  .reduce((acc, cur,i, array)=>{
+                                      if (i !== 0 ) {
+                                          return [ ...acc, val.valueJoint ,cur]
+                                      }
+                                      return [...acc,cur]
+                                  },[])
                                   : checkValue(val.value)
                             }
                         </span>
@@ -124,21 +134,16 @@ const numberWithCommas = (x) => {
 let mapToTr = (val, key) => (
     <tr key={key}
         className={
-            val
-            && val.type
-            && val.type === 'date' ?
-                'table-time' : 'table-value'
-    }>
+            val && val.type === 'date' ?
+                'table-time' : 'table-value' }>
         {
             val && val.data && val.data.slice(0, 8)
             .map( (data, i) =>
-                <td
-                  key={i}
-                //   className = { data.toString().length > 6 ? 'value-sm': null}
-                >
+                <td key={i} >
                     {val.type !== 'date' ? numberWithCommas(data) : data}
                     {val.suffix}
-                </td>)
+                </td>
+            )
         }
     </tr>
 )

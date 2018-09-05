@@ -5,6 +5,9 @@
     border-radius: 5px;
     box-shadow: 2px 4px 15px rgba(100, 100, 100, .8)
 }
+.stock-card:hover {
+    box-shadow: 4px 7px 30px rgba(100, 100, 100, .8)
+}
 .stock-card:not(:last-child){
     margin-bottom: 5rem;
 }
