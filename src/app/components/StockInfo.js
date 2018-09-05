@@ -208,12 +208,12 @@ class StockInfo extends Component {
             <div className="stock-card" >
                 {showRank(stock)}
                 <div className="row">
-                    <div className="col-1-of-2">
+                    <div className="col-4-of-10">
                         {stock && showTitle(stock)}
                         {stock && showDescription(stock)}
                         {stock && showCalInfo(stock)}
                     </div>
-                    <div className="col-1-of-2">
+                    <div className="col-6-of-10">
                         {stock && showParseInfo(stock)}
                     </div>
                 </div>

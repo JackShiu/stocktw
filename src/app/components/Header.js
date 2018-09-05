@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "./Header.css";
 
+import SearchBtn from "./SearchBtn";
 
 
 class Header extends Component {
@@ -12,8 +13,7 @@ class Header extends Component {
                     StockTW
                 </h1>
                 <div className="header__search-box">
-                    <input type="text" className="search-text" />
-                    <input type="submit" value="搜尋" className="search-btn" />
+                    <SearchBtn />
                 </div>
              </div>
         </header>

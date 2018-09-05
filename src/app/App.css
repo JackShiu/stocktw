@@ -16,3 +16,9 @@
 .row .col-1-of-2 {
     width: calc((100% - 1%) / 2);
 }
+.row .col-4-of-10 {
+    width: calc((100% - 1rem) * .4);
+}
+.row .col-6-of-10 {
+    width: calc((100% - 1rem) * .6);
+}

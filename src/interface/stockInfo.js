@@ -379,8 +379,14 @@ stockInfo.prototype.getBasicCategory = function () {
     return this.basic.Category;
 }
 
-
-
+/*---------------------------------*/
+/* toString                        */
+/*---------------------------------*/
+stockInfo.prototype.toString = function () {
+    let { ID, Name, Type, Category } = this.basic;
+    let { s_ProductType } = this.info;
+    return `${ID},${Name},${Type},${Category},${s_ProductType}`;
+};
 
 /*---------------------------------*/
 /* Export                          */

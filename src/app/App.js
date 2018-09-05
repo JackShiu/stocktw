@@ -22,6 +22,7 @@ let getStockInfo = parseList.data.map(req => {
   let rank = cal.RiskEarningRatio;
   return {
     info,
+    conj: info.toString(), //for search
     cal,
     rank
   };
@@ -43,7 +44,7 @@ class App extends Component {
         <main>
           <Header />
           <Navbar />
-          <SectionDelete />
+          {/* <SectionDelete /> */}
           <SectionStockList stockList={this.state.stockList} />
         </main>
         <Footer />
