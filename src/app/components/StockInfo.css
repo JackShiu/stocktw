@@ -76,6 +76,44 @@
     background-color: #ccc;
     padding: 2px;
 }
+
+.show-link {
+    background-color: #fff;
+    min-height: 2rem;
+    margin: 0 0 .6rem .6rem;
+     padding: 1rem;
+}
+.show-link::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.show-link a {
+    font-size: 1.2rem;
+    font-weight: 700;
+    float: left;
+    display: inline-block;
+    text-decoration: none;
+    color: #000;
+    min-width: 5rem;
+    height: 3rem;
+    text-align: center;
+    line-height: 3rem;
+    padding: 0 .4rem;
+    background: #ccc;
+    margin-right: 1rem;
+    border-radius: 4px;
+    box-shadow: 2px 2px 3px rgba(0, 0, 0, .5);
+}
+.show-link a:hover {
+    background: #aaa;
+    box-shadow: 2px 5px 10px rgba(0, 0, 0, .5);
+}
+.show-link a:active {
+    background: #ccc;
+    box-shadow: 2px 2px 3px rgba(0, 0, 0, .5);
+}
+
 .parse-value {
     margin: 0 0 .6rem .6rem;
     padding: 1rem;

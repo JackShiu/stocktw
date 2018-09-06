@@ -112,7 +112,7 @@ let showCalInfo = ({ cal, info }) => {
                                 //   .join(val.valueJoint)
                                   .reduce((acc, cur,i, array)=>{
                                       if (i !== 0 ) {
-                                          let comma = val.valueJoint && ',';
+                                          let comma = val.valueJoint || ',';
                                           return [...acc, comma ,cur]
                                       }
                                       return [...acc,cur]
@@ -206,6 +206,16 @@ let showParseInfo = ({info}) => {
       </div>;
 }
 
+let showLink = ( {info}) => {
+    const ID = info.getBasicID();
+    return (<div className="show-link">
+            <a target="_blank" href={`http://jsjustweb.jihsun.com.tw/z/zc/zca/zca_${ID}.djhtm`}>基本資料</a>
+            <a target="_blank" href={`https://histock.tw/stock/tchart.aspx?no=${ID}`}>K線圖</a>
+            <a target="_blank" href={`https://histock.tw/stock/${ID}`}>hiStock</a>
+            <a target="_blank" href={`https://goodinfo.tw/StockInfo/StockDividendPolicy.asp?STOCK_ID=${ID}&MAP_YEAR=DIVIDEND_YEAR&SHOW_ROTC=`}>股利資訊</a>
+    </div>)
+};
+
 class StockInfo extends Component {
 
     render() {
@@ -220,6 +230,7 @@ class StockInfo extends Component {
                         {stock && showCalInfo(stock)}
                     </div>
                     <div className="col-6-of-10">
+                        {stock && showLink(stock)}
                         {stock && showParseInfo(stock)}
                     </div>
                 </div>

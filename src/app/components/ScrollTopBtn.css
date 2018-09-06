@@ -1,0 +1,13 @@
+
+#scroll-top {
+    position: fixed;
+    right: 2rem;
+    bottom: 5rem;;
+    /* background: rgba(167, 127, 127, 0.61); */
+    width: 5rem;
+    height: 5rem;
+    opacity: .3;
+}
+#scroll-top:hover {
+    opacity: .7;
+}

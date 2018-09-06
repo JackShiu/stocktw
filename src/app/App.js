@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 import Navbar from "./components/Navbar";
 import SectionDelete from "./components/SectionDelete";
 import SectionStockList from "./components/SectionStockList";
-
+import ScrollTopBtn from './components/ScrollTopBtn'
 let getStockInfo = parseList.data.map(req => {
   let stock = parseValue[req.ID];
   let info = new infoManager(stock);
@@ -34,13 +34,15 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      stockList: getStockInfo
+      stockList: getStockInfo,
+      isScroll:false
     }
   }
 
   render() {
     // console.log(this.state.stocklist)
     return <div className="App">
+      <ScrollTopBtn />
         <main>
           <Header />
           <Navbar />
