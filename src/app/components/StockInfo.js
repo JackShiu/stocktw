@@ -1,5 +1,10 @@
 import React, { Component } from "react";
 import "./StockInfo.css";
+import PropTypes from 'prop-types';
+
+import { connect } from "react-redux";
+import * as actionCreators from "../actions/action";
+
 
 let checkValue = num => {
     // if (isNaN(num) || num.length === 0) return num;
@@ -71,9 +76,14 @@ let mapToCalObj = (cal = {}, info = {}) => [
     }
 ];
 
-let showRank = ({ index } = -1) => {
+let showRank = ({ index, info } = -1, onAddBtnClick) => {
     return (
         <div className="card-rank">
+            <div className="card-rank__btn">
+                {/* <i className="btn card-btn__delete"></i> */}
+                <i className="btn card-btn__add" onClick={() => onAddBtnClick()} ></i>
+                {/* <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMzQ2LjUgMjQwSDI3MnYtNzQuNWMwLTguOC03LjItMTYtMTYtMTZzLTE2IDcuMi0xNiAxNlYyNDBoLTc0LjVjLTguOCAwLTE2IDYtMTYgMTZzNy41IDE2IDE2IDE2SDI0MHY3NC41YzAgOS41IDcgMTYgMTYgMTZzMTYtNy4yIDE2LTE2VjI3Mmg3NC41YzguOCAwIDE2LTcuMiAxNi0xNnMtNy4yLTE2LTE2LTE2eiIvPjxwYXRoIGQ9Ik0yNTYgNzZjNDguMSAwIDkzLjMgMTguNyAxMjcuMyA1Mi43UzQzNiAyMDcuOSA0MzYgMjU2cy0xOC43IDkzLjMtNTIuNyAxMjcuM1MzMDQuMSA0MzYgMjU2IDQzNmMtNDguMSAwLTkzLjMtMTguNy0xMjcuMy01Mi43Uzc2IDMwNC4xIDc2IDI1NnMxOC43LTkzLjMgNTIuNy0xMjcuM1MyMDcuOSA3NiAyNTYgNzZtMC0yOEMxNDEuMSA0OCA0OCAxNDEuMSA0OCAyNTZzOTMuMSAyMDggMjA4IDIwOCAyMDgtOTMuMSAyMDgtMjA4UzM3MC45IDQ4IDI1NiA0OHoiLz48L3N2Zz4="/> */}
+            </div>
             <p>Rank {index}</p>
         </div>
     )
@@ -217,12 +227,26 @@ let showLink = ( {info}) => {
 };
 
 class StockInfo extends Component {
+    static propTypes = {
+        stock: PropTypes.object
+    }
+    static defaultProps = {
+        stock: {}
+    };
 
+    onAddBtnClick(){
+        const { info } = this.props.stock;
+        console.log('click: ' + info.getBasicID());
+        let id = info.getBasicID();
+        let name = info.getBasicName();
+        this.props.onAddToList &&
+            this.props.onAddToList(id, name);
+    }
     render() {
         const { stock } = this.props;
         return <section className="section-sotckinfo">
             <div className="stock-card" >
-                {showRank(stock)}
+                {showRank(stock, this.onAddBtnClick.bind(this))}
                 <div className="row">
                     <div className="col-4-of-10">
                         {stock && showTitle(stock)}
@@ -240,4 +264,4 @@ class StockInfo extends Component {
 
 }
 
-export default StockInfo;
+export default connect(null, actionCreators)(StockInfo);

@@ -22,6 +22,51 @@
     margin: 0 auto .6rem auto;
     padding: .6rem;
     background: #888;
+    height: 2rem;
+    line-height: 2rem;
+    position: relative;
+}
+.card-rank__btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: .8rem 0 1rem 1rem;
+    height: 2rem;
+    line-height: 2rem;
+}
+.card-rank__btn::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.card-rank__btn .btn {
+    height: 1.6rem;
+    width: 1.6rem;
+    float: left;
+    display: inline-block;
+    background-color: rgb(235, 235, 235);
+    background-size: contain;
+    border-radius: 50%;
+    border: 1px solid #000;
+    margin-right: .6rem;
+    transition: .1s all ease-in;
+}
+
+.card-btn__add {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMzY4LjUgMjQwSDI3MnYtOTYuNWMwLTguOC03LjItMTYtMTYtMTZzLTE2IDcuMi0xNiAxNlYyNDBoLTk2LjVjLTguOCAwLTE2IDcuMi0xNiAxNiAwIDQuNCAxLjggOC40IDQuNyAxMS4zIDIuOSAyLjkgNi45IDQuNyAxMS4zIDQuN0gyNDB2OTYuNWMwIDQuNCAxLjggOC40IDQuNyAxMS4zIDIuOSAyLjkgNi45IDQuNyAxMS4zIDQuNyA4LjggMCAxNi03LjIgMTYtMTZWMjcyaDk2LjVjOC44IDAgMTYtNy4yIDE2LTE2cy03LjItMTYtMTYtMTZ6Ii8+PC9zdmc+');
+}
+.card-btn__delete {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjc4LjYgMjU2bDY4LjItNjguMmM2LjItNi4yIDYuMi0xNi40IDAtMjIuNi02LjItNi4yLTE2LjQtNi4yLTIyLjYgMEwyNTYgMjMzLjRsLTY4LjItNjguMmMtNi4yLTYuMi0xNi40LTYuMi0yMi42IDAtMy4xIDMuMS00LjcgNy4yLTQuNyAxMS4zIDAgNC4xIDEuNiA4LjIgNC43IDExLjNsNjguMiA2OC4yLTY4LjIgNjguMmMtMy4xIDMuMS00LjcgNy4yLTQuNyAxMS4zIDAgNC4xIDEuNiA4LjIgNC43IDExLjMgNi4yIDYuMiAxNi40IDYuMiAyMi42IDBsNjguMi02OC4yIDY4LjIgNjguMmM2LjIgNi4yIDE2LjQgNi4yIDIyLjYgMCA2LjItNi4yIDYuMi0xNi40IDAtMjIuNkwyNzguNiAyNTZ6Ii8+PC9zdmc+');
+}
+
+.card-rank__btn .btn:hover {
+    background-color: rgb(180, 180, 180);
+    /* box-shadow: 2px 3px 5px rgba(80, 80, 80, .8) */
+}
+.card-rank__btn .btn:active {
+    background-color: rgb(235, 235, 235);
+    box-shadow:none;
+
 }
 
 .stock-title {

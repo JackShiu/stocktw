@@ -7,6 +7,7 @@ import  * as parseList from 'data/list.json';
 import { calculate} from 'parser/analysis/calculate';
 
 //import componenets
+import SideBar from './components/SideBar'
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Navbar from "./components/Navbar";
@@ -43,6 +44,7 @@ class App extends Component {
     // console.log(this.state.stocklist)
     return <div className="App">
       <ScrollTopBtn />
+      <SideBar />
         <main>
           <Header />
           <Navbar />
