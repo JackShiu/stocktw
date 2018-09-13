@@ -28,7 +28,7 @@ function filters(state = {}, action) {
     }
 }
 
-function selectList(state = { listId: [5392], listName: ['應華']}, action) {
+function selectList(state = { listId: [], listName: []}, action) {
     switch (action.type) {
         case "ADD_TO_LIST": {
             console.log(state);
