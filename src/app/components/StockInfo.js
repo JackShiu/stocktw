@@ -220,7 +220,10 @@ let showLink = ( {info}) => {
     const ID = info.getBasicID();
     return (<div className="show-link">
             <a target="_blank" href={`http://jsjustweb.jihsun.com.tw/z/zc/zca/zca_${ID}.djhtm`}>基本資料</a>
+            <a target="_blank" href={`https://www.stockdog.com.tw/stockdog/index.php?sid=${ID}`}>股狗</a>
             <a target="_blank" href={`https://histock.tw/stock/tchart.aspx?no=${ID}`}>K線圖</a>
+            <a target="_blank" href={`https://www.cnyes.com/twstock/foreignrating/${ID}.htm`}>外資評等</a>
+            <a target="_blank" href={`http://jsjustweb.jihsun.com.tw/z/zc/zcr/zcr0.djhtm?b=Q&a=${ID}`}>財務比率表</a>
             <a target="_blank" href={`https://histock.tw/stock/chips.aspx?no=${ID}&m=mg`}>融資融券</a>
             <a target="_blank" href={`https://histock.tw/stock/${ID}`}>hiStock</a>
             <a target="_blank" href={`https://goodinfo.tw/StockInfo/StockDividendPolicy.asp?STOCK_ID=${ID}&MAP_YEAR=DIVIDEND_YEAR&SHOW_ROTC=`}>股利資訊</a>

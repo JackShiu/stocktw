@@ -32,7 +32,7 @@ class SectionStockList extends Component {
                     return true;
                 })
                 .sort((a, b) => b.rank - a.rank)
-                .slice(0, 100)
+                .slice(0, 150)
                 .map((stock, i) => {
                     return <div className="stock-card" key={i} id={`rank-${i+1}`}>
                         <StockInfo stock={{ ...stock, index: i + 1 }} />

@@ -136,6 +136,20 @@ module.exports.reset = clearAll = () => {
 }
 
 
+let getValidRange = (data, Max, Min) => {
+    let isInvalid = false;
+    return data.slice(0, Max).reduce( (acc, cur) => {
+        if (cur <= 0 ) isInvalid = true;
+        if (isInvalid){
+            if(acc < Min){
+                return Min;
+            }
+            return acc;
+        }
+        return acc + 1 ;
+    } ,0);
+}
+
 // ============================
 // ============================
 module.exports.calculate = data => {
@@ -145,8 +159,12 @@ module.exports.calculate = data => {
        1. 預估本益比區間
     ================= */
     isValidOfPEAverage = true;
-    let H_PER = data.getPE("Y_max").slice(0, 6);
-    let L_PER = data.getPE("Y_min").slice(0, 6);
+    let H_Range = getValidRange(data.getPE("Y_max"), 6, 3);
+    let L_Range = getValidRange(data.getPE("Y_min"), 6, 3);
+    let PER_Range = Math.min(H_Range, L_Range);
+    // console.log(data.getStockName(), PER_Range);
+    let H_PER = data.getPE("Y_max").slice(0, PER_Range);
+    let L_PER = data.getPE("Y_min").slice(0, PER_Range);
     const a_AvgMaxPE = getPEAverage(H_PER, "MAX");
     const a_AvgMinPE = getPEAverage(L_PER, "MIN");
     // let a_PredictPE;

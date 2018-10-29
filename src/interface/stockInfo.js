@@ -4,18 +4,49 @@ module.exports.getEmptyStockInfo = getEmptyStockInfo = function () {
         s_Name: null,
         s_ProductType: null,
         o_UpdateTime: {
-            s_M_TIME: null, //2018-08
-            s_Q_TIME: null, //2018-Q1
+            a_D_TIME: [], // 10/30
+            s_M_TIME: null, //2018.08
+            a_Q_TIME: [], //2018.1Q
             s_Y_TIME: null //2018
+        },
+        o_TempValue:{
+            s_Q_TIME: null
         },
         o_Price: {
             s_closingPrice: null,
             s_maxInYear: null,
-            s_minInYear: null
+            s_minInYear: null,
+            s_dailyPricing: null, // 當日漲跌,
+            a_D_TIME: [],
+            a_D_OpenPrice: [],
+            a_D_HeightestPrice: [],
+            a_D_LowestPrice: [],
+            a_D_ClosePrice: [],
+            a_D_Volume: [],
+        },
+        o_FundamentalAnalysis: { // 基本面
+            s_dividend: null,    //股利
+            s_dividendYield: null, //殖利率
+            s_debtRatio: null,   //負債比
+            s_PBR: null,         //股價淨值比
+            s_W_ROI: null,       //近一週報酬率
+            s_M_ROI: null,       //近一月報酬率
+        },
+        o_ChipAnalysis: { // 籌碼面
+            a_D_TIME: [],
+            a_D_FIR: [], //Foreign investor ratio
+            a_D_IIR: [], //Institutional investors ratio
+            s_D_NBNS: null //net buy/ net sell
+        },
+        o_TechnicalAnalysis: { //技術面
+            s_D_MA5: null,
+            s_D_MA10: null,
+            s_D_MA60: null
         },
         o_Capital: {
             a_Q_value: [],
-            a_Q_TIME: []
+            a_Q_TIME: [],
+            s_current: null //億單位
         },
         o_PE: {
             s_current: null,
@@ -41,6 +72,14 @@ module.exports.getEmptyStockInfo = getEmptyStockInfo = function () {
             a_Q_TIME: [],
             a_Y_TIME: []
         },
+        o_GrossProfit: { //毛利率
+            a_Q_value: [],
+            a_Q_TIME: []
+        },
+        o_OperatingProfitMargin: { //營業利益率
+            a_Q_value: [],
+            a_Q_TIME: []
+        },
         a_OperatingCost: [],
         a_OperatingIncome: [],
         a_OperatingExpend: [],
@@ -56,7 +95,8 @@ module.exports.getEmptyStockInfo = getEmptyStockInfo = function () {
 }
 
 function stockInfo(val){
-    this.info = val || getEmptyStockInfo();
+    // this.info = val || getEmptyStockInfo();
+    this.info = Object.assign(getEmptyStockInfo(), val);
 }
 stockInfo.prototype.export = function () {
     return this.info;
@@ -74,13 +114,33 @@ stockInfo.prototype.getProductType = function () {
     return this.info.s_ProductType;
 }
 
+stockInfo.prototype.setTempValue = function (type, value = null){
+    switch (type) {
+            case "Temp_Q_TIME":
+            this.info.o_TempValue.s_Q_TIME = value;
+        break;
+    }
+}
+stockInfo.prototype.getTempValue = function (type) {
+    switch (type) {
+        case "Temp_Q_TIME":
+            return this.info.o_TempValue.s_Q_TIME;
+            break;
+        default:
+            return this.info.o_TempValue;
+            break;
+    }
+}
 stockInfo.prototype.setUpdatedTime = function (type, time = null){
     switch (type) {
+            case "D_TIME":
+            this.info.o_UpdateTime.a_D_TIME = time;
+        break;
             case "M_TIME":
             this.info.o_UpdateTime.s_M_TIME = time;
         break;
             case "Q_TIME":
-            this.info.o_UpdateTime.s_Q_TIME = time;
+            this.info.o_UpdateTime.a_Q_TIME = time;
         break;
             case "Y_TIME":
             this.info.o_UpdateTime.s_Y_TIME = time;
@@ -89,14 +149,20 @@ stockInfo.prototype.setUpdatedTime = function (type, time = null){
 }
 stockInfo.prototype.getUpdatedTime = function(type){
     switch (type) {
+        case "D_TIME":
+            return this.info.o_UpdateTime.a_D_TIME;
+            break;
         case "M_TIME":
             return this.info.o_UpdateTime.s_M_TIME;
             break;
         case "Q_TIME":
-            return this.info.o_UpdateTime.s_Q_TIME;
+            return this.info.o_UpdateTime.a_Q_TIME;
             break;
         case "Y_TIME":
             return this.info.o_UpdateTime.s_Y_TIME;
+            break;
+        default:
+            return this.info.o_UpdateTime;
             break;
     }
 }
@@ -111,6 +177,27 @@ stockInfo.prototype.setPrice = function (type, data = null){
         case "D_minInYear":
             this.info.o_Price.s_minInYear = data;
             break;
+        case "D_dailyPricing":
+            this.info.o_Price.s_dailyPricing = data;
+            break;
+        case "D_TIME":
+            this.info.o_Price.a_D_TIME = data;
+            break;
+        case "D_OpenPrice":
+            this.info.o_Price.a_D_OpenPrice = data;
+            break;
+        case "D_HeightestPrice":
+            this.info.o_Price.a_D_HeightestPrice = data;
+            break;
+        case "D_LowestPrice":
+            this.info.o_Price.a_D_LowestPrice = data;
+            break;
+        case "D_ClosePrice":
+            this.info.o_Price.a_D_ClosePrice = data;
+            break;
+        case "D_Volume":
+            this.info.o_Price.a_D_Volume = data;
+            break;
     }
 }
 stockInfo.prototype.getPrice = function(type){
@@ -124,8 +211,147 @@ stockInfo.prototype.getPrice = function(type){
         case "D_minInYear":
             return this.info.o_Price.s_minInYear;
             break;
+        case "D_dailyPricing":
+            return this.info.o_Price.s_dailyPricing;
+            break;
+        case "D_TIME":
+            return this.info.o_Price.a_D_TIME;
+            break;
+        case "D_OpenPrice":
+            return this.info.o_Price.a_D_OpenPrice;
+            break;
+        case "D_HeightestPrice":
+            return this.info.o_Price.a_D_HeightestPrice;
+            break;
+        case "D_LowestPrice":
+            return this.info.o_Price.a_D_LowestPrice;
+            break;
+        case "D_ClosePrice":
+            return this.info.o_Price.a_D_ClosePrice;
+            break;
+        case "D_Volume":
+            return this.info.o_Price.a_D_Volume;
+            break;
+        default:
+            return this.info.o_Price;
+            break;
     }
 }
+
+stockInfo.prototype.setFundamentalAnalysis = function (type, data = null) {
+    switch (type) {
+        case "S_dividend":
+            this.info.o_FundamentalAnalysis.s_dividend = data;
+            break;
+        case "S_dividendYield":
+            this.info.o_FundamentalAnalysis.s_dividendYield = data;
+            break;
+        case "S_debtRatio":
+            this.info.o_FundamentalAnalysis.s_debtRatio = data;
+            break;
+        case "S_PBR":
+            this.info.o_FundamentalAnalysis.s_PBR = data;
+            break;
+        case "W_ROI":
+            this.info.o_FundamentalAnalysis.s_W_ROI = data;
+            break;
+        case "M_ROI":
+            this.info.o_FundamentalAnalysis.s_M_ROI = data;
+            break;
+    }
+}
+
+stockInfo.prototype.getFundamentalAnalysis = function (type) {
+    switch (type) {
+        case "S_dividend":
+            return this.info.o_FundamentalAnalysis.s_dividend;
+            break;
+        case "S_dividendYield":
+            return this.info.o_FundamentalAnalysis.s_dividendYield;
+            break;
+        case "S_debtRatio":
+            return this.info.o_FundamentalAnalysis.s_debtRatio;
+            break;
+        case "S_PBR":
+            return this.info.o_FundamentalAnalysis.s_PBR;
+            break;
+        case "W_ROI":
+            return this.info.o_FundamentalAnalysis.s_W_ROI;
+            break;
+        case "M_ROI":
+            return this.info.o_FundamentalAnalysis.s_M_ROI;
+            break;
+        default:
+            return this.info.o_FundamentalAnalysis ;
+            break;
+    }
+}
+
+stockInfo.prototype.setChipAnalysis = function (type, data = null) {
+    switch (type) {
+        case "D_TIME":
+            this.info.o_ChipAnalysis.a_D_TIME = data;
+            break;
+        case "D_FIR":
+            this.info.o_ChipAnalysis.a_D_FIR = data;
+            break;
+        case "D_IIR":
+            this.info.o_ChipAnalysis.a_D_IIR = data;
+            break;
+        case "D_NBNS":
+            this.info.o_ChipAnalysis.s_D_NBNS = data;
+            break;
+    }
+}
+
+stockInfo.prototype.getChipAnalysis = function (type) {
+    switch (type) {
+        case "D_TIME":
+            return this.info.o_ChipAnalysis.a_D_TIME;
+            break;
+        case "D_FIR":
+            return this.info.o_ChipAnalysis.a_D_FIR;
+            break;
+        case "D_IIR":
+            return this.info.o_ChipAnalysis.a_D_IIR;
+            break;
+        case "D_NBNS":
+            return this.info.o_ChipAnalysis.s_D_NBNS;
+            break;
+        default:
+            return this.info.o_ChipAnalysis;
+            break;
+    }
+}
+
+stockInfo.prototype.setTechnicalAnalysis = function (type, data = null) {
+    switch (type) {
+        case "MA5":
+            this.info.o_TechnicalAnalysis.s_D_MA5 = data;
+            break;
+        case "MA10":
+            this.info.o_TechnicalAnalysis.s_D_MA10 = data;
+            break;
+        case "MA60":
+            this.info.o_TechnicalAnalysis.s_D_MA60 = data;
+            break;
+    }
+}
+
+stockInfo.prototype.getTechnicalAnalysis = function (type) {
+    switch (type) {
+        case "MA5":
+            return this.info.o_TechnicalAnalysis.s_D_MA5;
+            break;
+        case "MA10":
+            return this.info.o_TechnicalAnalysis.s_D_MA10;
+            break;
+        case "MA60":
+            return this.info.o_TechnicalAnalysis.s_D_MA60;
+            break;
+    }
+}
+
 stockInfo.prototype.setCapital = function (type, data = []){
     switch (type) {
         case "Q_value":
@@ -133,6 +359,9 @@ stockInfo.prototype.setCapital = function (type, data = []){
             break;
         case "Q_TIME":
             this.info.o_Capital.a_Q_TIME = data;
+            break;
+        case "D_Current":
+            this.info.o_Capital.s_current = data;
             break;
     }
 }
@@ -143,6 +372,9 @@ stockInfo.prototype.getCapital = function(type){
             break;
         case "Q_TIME":
             return this.info.o_Capital.a_Q_TIME;
+            break;
+        case "D_Current":
+            return this.info.o_Capital.s_current;
             break;
     }
 }
@@ -278,6 +510,54 @@ stockInfo.prototype.getOperatingRevenue = function(type) {
             break;
     }
 };
+
+stockInfo.prototype.setGrossProfit = function (type, data = []) {
+    switch (type) {
+        case "Q_value":
+            this.info.o_GrossProfit.a_Q_value = data;
+            break;
+        case "Q_TIME":
+            this.info.o_GrossProfit.a_Q_TIME = data;
+            break;
+    }
+};
+stockInfo.prototype.getGrossProfit = function (type) {
+    switch (type) {
+        case "Q_value":
+            return this.info.o_GrossProfit.a_Q_value;
+            break;
+        case "Q_TIME":
+            return this.info.o_GrossProfit.a_Q_TIME;
+            break;
+        default:
+            return this.info.o_GrossProfit;
+    }
+};
+
+stockInfo.prototype.setOperatingProfitMargin = function (type, data = []) {
+    switch (type) {
+        case "Q_value":
+            this.info.o_OperatingProfitMargin.a_Q_value = data;
+            break;
+        case "Q_TIME":
+            this.info.o_OperatingProfitMargin.a_Q_TIME = data;
+            break;
+    }
+};
+
+stockInfo.prototype.getOperatingProfitMargin = function (type) {
+    switch (type) {
+        case "Q_value":
+            return this.info.o_OperatingProfitMargin.a_Q_value;
+            break;
+        case "Q_TIME":
+            return this.info.o_OperatingProfitMargin.a_Q_TIME;
+            break;
+        default:
+            return this.info.o_OperatingProfitMargin;
+    }
+};
+
 stockInfo.prototype.setOperatingCost = function() {};
 stockInfo.prototype.getOperatingCost = function() {};
 stockInfo.prototype.setOperatingIncome = function() {};

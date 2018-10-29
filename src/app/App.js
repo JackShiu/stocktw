@@ -5,7 +5,7 @@ import { stockInfo as infoManager} from 'interface/stockInfo';
 import  * as parseValue from 'data/all_stock_value.json';
 import  * as parseList from 'data/list.json';
 import { calculate} from 'parser/analysis/calculate';
-
+import * as selectList from 'list.json'
 //import componenets
 import SideBar from './components/SideBar'
 import Header from './components/Header';
@@ -42,6 +42,7 @@ class App extends Component {
 
   render() {
     // console.log(this.state.stocklist)
+    console.log(Object.keys(selectList).map(v => `${v} : ${selectList[v]}`));
     return <div className="App">
       <ScrollTopBtn />
       <SideBar />
