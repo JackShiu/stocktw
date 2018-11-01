@@ -72,13 +72,13 @@ const getPEAverage = (data =[], limit) => {
     if (!isValidOfPEAverage) return -1;
 
     //計算基本平均數
-    const avgPE = PEList.reduce((acc, val) => { return acc + val }) / PEList.length;
+    const avgPE = PEList.reduce((acc, val) => { return acc + val },0) / PEList.length;
     // console.log("基本平均數",avgPE.toFixed(2));
 
     //計算標準差
     const sumDiff = PEList.reduce((acc, val) => {
         return acc + Math.pow(val - avgPE, 2);
-    });
+    },0);
     const delta = Math.pow(sumDiff / PEList.length, 0.5);
     // console.log("標準差", delta.toFixed(2),sumDiff.toFixed(2));
 
@@ -90,7 +90,7 @@ const getPEAverage = (data =[], limit) => {
     // console.log("兩倍標準差內的數值",newList);
 
     //計算常態分佈平均值
-    return newList.reduce((acc, val) => acc + val) / newList.length
+    return newList.reduce((acc, val) => (acc + val),0) / newList.length
 }
 
 
