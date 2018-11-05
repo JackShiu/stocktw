@@ -13,7 +13,9 @@ import Footer from './components/Footer';
 import Navbar from "./components/Navbar";
 import SectionDelete from "./components/SectionDelete";
 import SectionStockList from "./components/SectionStockList";
-import ScrollTopBtn from './components/ScrollTopBtn'
+import ScrollTopBtn from './components/ScrollTopBtn';
+import mStockInfoManager from './utils/stockInfoManager'
+
 let getStockInfo = parseList.data.map(req => {
   let stock = parseValue[req.ID];
   let info = new infoManager(stock);
@@ -38,11 +40,18 @@ class App extends Component {
       stockList: getStockInfo,
       isScroll:false
     }
+    let temp = new mStockInfoManager();
+    // console.log(temp.getInfobyID(1477));
+    // console.log(temp.getRankObjNamelist());
+    // console.log(temp.getRankList());
+    // console.log(temp.getStockInfo()[1477].keywords)
+    // console.log(temp.getEvaluatedInfo()[1477].Volume_MA5);
+    // console.log(temp.getEvaluatedInfo()[1477].predictInfo.PredictEPS);
   }
 
   render() {
     // console.log(this.state.stocklist)
-    console.log(Object.keys(selectList).map(v => `${v} : ${selectList[v]}`));
+    // console.log(Object.keys(selectList).map(v => `${v} : ${selectList[v]}`));
     return <div className="App">
       <ScrollTopBtn />
       <SideBar />

@@ -14,7 +14,7 @@ const {
     getCandlestickChart,
     getEarningpower
 } = require("../parser/jsjustweb.jihsun.com.tw/main");
-const mStockInfoManager = require('./StockInfoManager');
+const mStockInfoUpdater = require('./StockInfoUpdater');
 const { getStockIDList } = require("../parser/isin.twse.com.tw/main");
 const { saveData, readJASON, writeJASON } = require("../fs/fs");
 
@@ -92,6 +92,7 @@ let fetchController = async (stockID, options, func) => {
                 // await delay(parseInt(60 * counter * (Math.random() + 1)));
                 await fectchLoop();
             } else {
+                res = null;
                 console.log(`fail at : ${stockID} ${e}`);
                 let currentTime = moment().format("MM/DD h:mm:ss");//7/12 23:18:40
                 saveData("./out/fail.txt", `${currentTime} {${stockID}} : ${e}\n`, "APPEN");
@@ -123,35 +124,35 @@ let estimate = async (stockID, options) => {
             // 每日 - 基本資料
             if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[0] !== getToday()) {
                 let res = await fetchController(stockID, options, getBasicInfoWeb);
-                info = mStockInfoManager.updateBaicInfoWeb(res, info);
+                if(res) info = mStockInfoUpdater.updateBaicInfoWeb(res, info);
                 s_Update_info += "日-基本更新\n";
             }
 
             // 每日 - 三大法人資料
             if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[1] !== getToday()) {
                 let res = await fetchController(stockID, options, getInstitutionalInvestor);
-                info = mStockInfoManager.updateInstitutionalInvestor(res, info);
+                if(res) info = mStockInfoUpdater.updateInstitutionalInvestor(res, info);
                 s_Update_info += "日-三大法人更新\n";
             }
 
             //每日 - K線圖資料
             if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[2] !== getToday()) {
                 let res = await fetchController(stockID, options, getCandlestickChart);
-                info = mStockInfoManager.updateCandlestickChart(res, info);
+                if(res) info = mStockInfoUpdater.updateCandlestickChart(res, info);
                 s_Update_info += "日-K線圖更新\n";
             }
 
             //每月 - 月營收明細
             if (getLastMonth() !== info.getUpdatedTime("M_TIME") ) {
                 let res = await fetchController(stockID, options, getRevenueWeb_M);
-                info = mStockInfoManager.updateRevenueWeb_M(res, info);
+                if(res) info = mStockInfoUpdater.updateRevenueWeb_M(res, info);
                 s_Update_info += "月-月營收明細\n";
             }
 
             // 每季 - 獲利能力
             if (!info.getUpdatedTime("Q_TIME") || info.getUpdatedTime("Q_TIME")[0] !== info.getTempValue('Temp_Q_TIME')) {
                 let res = await fetchController(stockID, options, getEarningpower);
-                info = mStockInfoManager.updateEarningpower(res, info);
+                if(res) info = mStockInfoUpdater.updateEarningpower(res, info);
                 s_Update_info += "季-獲利能力更新\n";
 
             }
@@ -159,7 +160,7 @@ let estimate = async (stockID, options) => {
             // 每季 - 績效更新
             if (!info.getUpdatedTime("Q_TIME") || info.getUpdatedTime("Q_TIME")[1] !== info.getTempValue('Temp_Q_TIME')) {
                 let res = await fetchController(stockID, options, getPerformanceWeb_S);
-                info = mStockInfoManager.updatePerformanceWeb_S(res, info);
+                if(res) info = mStockInfoUpdater.updatePerformanceWeb_S(res, info);
                 s_Update_info += "季-績效更新\n";
             }
 
@@ -167,7 +168,7 @@ let estimate = async (stockID, options) => {
             lastUpdateTime = info.getUpdatedTime("Y_TIME");
             if (parseInt(getLastYear()) !== info.getUpdatedTime("Y_TIME")) {
                 let res = await fetchController(stockID, options, getPerformanceWeb_Y);
-                info = mStockInfoManager.updatePerformanceWeb_Y(res, info);
+                if(res) info = mStockInfoUpdater.updatePerformanceWeb_Y(res, info);
                 s_Update_info += "年-經營績效\n";
             }
 
@@ -180,7 +181,7 @@ let estimate = async (stockID, options) => {
         saveData("./out/fail.txt", `${currentTime} {${stockID}} : ${e}\n`, "APPEN");
     } finally {
         let o_WebAddress = getWebAddress(stockID); //拿到所有網址
-        let showInfo = mStockInfoManager.getDisplay(stockID, o_WebAddress, info, calData);
+        let showInfo = mStockInfoUpdater.getDisplay(stockID, o_WebAddress, info, calData);
         // 儲存 parserdata
         if (s_Update_info.length > 0){
             console.log(s_Update_info);
