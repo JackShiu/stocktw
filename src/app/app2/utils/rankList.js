@@ -79,6 +79,20 @@ export let rankObj = [
         compare: (a, b) => b - a
     },
     {
+        name: "R_chip_FIR_S_Div3", //籌碼面
+        display: "外資賣(三)",
+        type: "basic",
+        getValue: info => {
+            let data = info.info.getChipAnalysis("D_FIR");
+            if (data.length > 0) {
+                return data[2] - data[0]
+            } else {
+                return -1;
+            }
+        },
+        compare: (a, b) =>  b - a
+    },
+    {
         name: "R_dividend", //股利
         display: "殖利率排序",
         type: "basic",

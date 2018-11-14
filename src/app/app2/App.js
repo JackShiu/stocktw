@@ -19,6 +19,12 @@ import mStockInfoManager from "./utils/stockInfoManager";
 
 
 let mlist = {
+  排序: [
+    {
+      name: "號碼",
+      getValue: info => info.info.getBasicID()
+    }
+  ],
   基本資料: [
     {
       name: "號碼",
@@ -37,7 +43,7 @@ let mlist = {
       getValue: info => info.info.getBasicCategory()
     },
     {
-      name: (<p><div>股本</div>(億)</p>),
+      name: (<div><div>股本</div>(億)</div>),
       getValue: info => info.info.getCapital("D_Current")
     },
     {
@@ -55,7 +61,7 @@ let mlist = {
           comma = '';
         }
         let dPp = <p style={{ color: mColor }}>{comma}{dP}</p>
-        return <p><div>{cP}</div> <div>{dPp}</div></p>
+        return <div><div>{cP}</div> <div>{dPp}</div></div>
       }
     },
     {
@@ -83,7 +89,7 @@ let mlist = {
         if (L < 0 && H < 0) {
           return "=";
         } else {
-          return (<p><div>{L}</div><div>{H}</div></p>);
+          return (<div><div>{L}</div><div>{H}</div></div>);
         }
       }
     },
@@ -101,16 +107,16 @@ let mlist = {
   ],
   籌碼面: [
     {
-      name: (<p><div>排名</div><div>(法三)</div></p>),
+      name: "排名",//(<p><div>排名</div><div>(法三)</div></p>),
       getValue: info => info.R_chip_IIR_B_Div3
     },
     {
       name: (
-      <p>
+      <div>
         <div>
           法人(三)
         </div>
-      </p>),
+      </div>),
       getValue: info => {
         let data = info.info.getChipAnalysis("D_IIR");
         if (data.length > 0) {
@@ -122,11 +128,11 @@ let mlist = {
     },
     {
       name: (
-      <p>
+      <div>
         <div>
           法人(五)
         </div>
-      </p>),
+      </div>),
       getValue: info => {
         let data = info.info.getChipAnalysis("D_IIR");
         if (data.length > 0) {
@@ -138,11 +144,11 @@ let mlist = {
     },
     {
       name: (
-      <p>
+      <div>
         <div>
           外資(ㄧ)
         </div>
-      </p>),
+      </div>),
       getValue: info => {
         let data = info.info.getChipAnalysis("D_FIR");
         if (data.length > 0) {
@@ -154,11 +160,11 @@ let mlist = {
     },
     {
       name: (
-      <p>
+      <div>
         <div>
           外資(三)
         </div>
-      </p>),
+      </div>),
       getValue: info => {
         let data = info.info.getChipAnalysis("D_FIR");
         if (data.length > 0) {
@@ -213,9 +219,11 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.mStockInfoManager = new mStockInfoManager();
+    this.inputText = '';
     this.state = {
       R_module: "R_estimated",
-      mKeywordList: []
+      mKeywordList: [],
+      inputText: ""
     };
   }
 
@@ -226,10 +234,23 @@ class App extends Component {
     });
   }
 
+  onKeyPress(event) {
+    if (event && event.key === 'Enter') {
+      // this.onSearch();
+      let list = this.inputText.split(' ');
+      console.log(list.length!=0 ? list : "null");
+      this.setState({ mKeywordList: list });
+      this.inputText = '';
+      this.setState({ inputText:"" });
+
+    }
+  }
   handleChange(e) {
-    let raw = e.target.value||'';
-    let list = raw.split(' ');
-    this.setState(this.state, { mKeywordList: list });
+    // let raw = e.target.value;
+    // let list = raw.split(' ');
+    // console.log(list.length!=0 ? list : "null");
+    // this.setState({ inputText: e.target.value });
+    this.inputText = e.target.value;
   }
 
   render() {
@@ -257,7 +278,7 @@ class App extends Component {
         </ButtonToolbar>
         <div style={{ marginBottom: "4rem" }} />
         {/* Search Form */}
-        <form inline>
+        <div inline="true">
           <FormGroup
             controlId="formBasicText"
             // validationState={this.getValidationState()}
@@ -265,26 +286,30 @@ class App extends Component {
             <ControlLabel>關鍵字搜尋</ControlLabel>
             <FormControl
               type="text"
-              // value={this.state.value}
+              // value={this.state.inputText}
+              onKeyPress={(event) => this.onKeyPress(event)}
               placeholder="搜尋.. Ex. 2330 台積電"
-              // onChange={(e)=>this.handleChange(e)}
+              onChange={(e)=>this.handleChange(e)}
             />
-            <FormControl.Feedback />
           </FormGroup>
-        </form>
+        </div>
         <div style={{ marginBottom: "4rem" }} />
         {/* list  */}
         <Table striped bordered condensed hover responsive>
           <thead>
-            <tr>
+            <tr key='thead-tr-1'>
               {Object.keys(mlist).map(title => {
                 let col = mlist[title].length;
-                return <th colSpan={col}>{title}</th>;
+                return <th key={title} colSpan={col}>
+                    {title}
+                  </th>;
               })}
             </tr>
-            <tr>
+            <tr key='thead-tr-2'>
               {Object.keys(mlist).reduce((acc, title) => {
-                let item = mlist[title].map(obj => <th>{obj.name}</th>);
+                let item = mlist[title].map((obj,i) => (
+                  <th key={title +"-tr-"+i}>{obj.name}</th>
+                ));
                 return acc.concat(item);
               }, [])}
             </tr>
@@ -303,14 +328,23 @@ class App extends Component {
                 });
                 return isContain;
               })
-              .slice(0, 400)
-              .map(id => (
+              .slice(0, 200)
+              .map((id, rank) => (
                 <tr key={id}>
                   {//className = active success info warning danger
                   Object.keys(mlist).reduce((acc, title) => {
-                    let item = mlist[title].map(obj => (
-                      <th>{obj.getValue(mStockInfoManager.getInfobyID(id))}</th>
-                    ));
+                    let item = mlist[title].map((obj, i) => {
+                      let color = String(obj.name).includes("排名") ? "warning" : "";
+                      // console.log(String(obj.name), String(obj.name).includes("排名"))
+                      if (i == 0 && title =='排序'){
+                        return <th key={title + "-" + id + "-" + i}>
+                          {rank}
+                        </th>;
+                      }
+                      return <th key={title+"-"+id+"-"+i} class={color}>
+                          {obj.getValue(mStockInfoManager.getInfobyID(id))}
+                        </th>;
+                    });
                     return acc.concat(item);
                   }, [])}
                 </tr>
