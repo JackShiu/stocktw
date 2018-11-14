@@ -37,16 +37,26 @@ let mlist = {
       getValue: info => info.info.getBasicCategory()
     },
     {
-      name: "股本(億)",
+      name: (<p><div>股本</div>(億)</p>),
       getValue: info => info.info.getCapital("D_Current")
     },
     {
       name: "收盤價",
-      getValue: info => info.info.getPrice("D_closingPrice")
-    },
-    {
-      name: "漲跌",
-      getValue: info => info.info.getPrice("D_dailyPricing")
+      getValue: info =>{
+        let cP = info.info.getPrice("D_closingPrice");
+        let dP = info.info.getPrice("D_dailyPricing")
+        let mColor;
+        let comma = ''
+        if(dP>0){
+          mColor = 'red';
+          comma = '+';
+        } else if (dP<0) {
+          mColor = 'green'
+          comma = '';
+        }
+        let dPp = <p style={{ color: mColor }}>{comma}{dP}</p>
+        return <p><div>{cP}</div> <div>{dPp}</div></p>
+      }
     },
     {
       name: "成交量",
@@ -73,7 +83,7 @@ let mlist = {
         if (L < 0 && H < 0) {
           return "=";
         } else {
-          return `${L}-${H}`;
+          return (<p><div>{L}</div><div>{H}</div></p>);
         }
       }
     },
@@ -91,32 +101,96 @@ let mlist = {
   ],
   籌碼面: [
     {
-      name: "排名(3日差)",
-      getValue: info => info.R_chip_IIR_Div3
+      name: (<p><div>排名</div><div>(法三)</div></p>),
+      getValue: info => info.R_chip_IIR_B_Div3
     },
     {
-      name: "法人%(當日)",
+      name: (
+      <p>
+        <div>
+          法人(三)
+        </div>
+      </p>),
+      getValue: info => {
+        let data = info.info.getChipAnalysis("D_IIR");
+        if (data.length > 0) {
+          return (data[0] - data[2]).toFixed(3)
+        } else {
+          return -1;
+        }
+      }
+    },
+    {
+      name: (
+      <p>
+        <div>
+          法人(五)
+        </div>
+      </p>),
+      getValue: info => {
+        let data = info.info.getChipAnalysis("D_IIR");
+        if (data.length > 0) {
+          return (data[0] - data[4]).toFixed(3);
+        } else {
+          return -1;
+        }
+      }
+    },
+    {
+      name: (
+      <p>
+        <div>
+          外資(ㄧ)
+        </div>
+      </p>),
+      getValue: info => {
+        let data = info.info.getChipAnalysis("D_FIR");
+        if (data.length > 0) {
+          return (data[0] - data[1]).toFixed(3);
+        } else {
+          return -1;
+        }
+      }
+    },
+    {
+      name: (
+      <p>
+        <div>
+          外資(三)
+        </div>
+      </p>),
+      getValue: info => {
+        let data = info.info.getChipAnalysis("D_FIR");
+        if (data.length > 0) {
+          return (data[0] - data[2]).toFixed(3);
+        } else {
+          return -1;
+        }
+      }
+    },
+    {
+      name: "法人(總)",
       getValue: info => info.info.getChipAnalysis("D_FIR")[0]
     },
     {
-      name: "外資%(當日)",
+      name: "外資(總)",
       getValue: info => info.info.getChipAnalysis("D_IIR")[0]
     }
   ],
-  技術: [
-    {
-      name: "5MA",
-      getValue: info => info.MA5[info.MA5.length - 1].toFixed(2)
-    },
-    {
-      name: "10MA",
-      getValue: info => info.MA10[info.MA10.length - 1].toFixed(2)
-    },
-    {
-      name: "60MA",
-      getValue: info => info.MA20[info.MA60.length - 1].toFixed(2)
-    }
-  ],
+  // 技術: [
+  //   {
+  //     name: "5MA",
+  //     getValue: info => info.MA5[info.MA5.length - 1].toFixed(2)
+  //   },
+  //   {
+  //     name: "10MA",
+  //     getValue: info => info.MA10[info.MA10.length - 1].toFixed(2)
+  //   },
+  //   {
+  //     name: "60MA",
+  //     getValue: info => info.MA20[info.MA60.length - 1].toFixed(2)
+  //   }
+  // ],
   股利: [
     {
       name: "排名",

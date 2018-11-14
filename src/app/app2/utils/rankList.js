@@ -9,22 +9,8 @@ export let rankObj = [
         compare: (a, b) => b - a
     },
     {
-        name: "R_chip_IIR_Div3", //籌碼面
-        display: "法人三日比例排序",
-        type: "basic",
-        getValue: info => {
-            let data = info.info.getChipAnalysis("D_IIR");
-            if (data.length > 0) {
-                return data[0] - data[2]
-            } else {
-                return -1;
-            }
-        },
-        compare: (a, b) => b - a
-    },
-    {
-        name: "R_chip_IIR_Div1", //籌碼面
-        display: "法人一日比例排序",
+        name: "R_chip_IIR_B_Div1", //籌碼面
+        display: "法人買(ㄧ)",
         type: "basic",
         getValue: info => {
             let data = info.info.getChipAnalysis("D_IIR");
@@ -37,13 +23,55 @@ export let rankObj = [
         compare: (a, b) => b - a
     },
     {
-        name: "R_chip_IIR_Div5", //籌碼面
-        display: "法人五日比例排序",
+        name: "R_chip_IIR_B_Div3", //籌碼面
+        display: "法人買(三)",
+        type: "basic",
+        getValue: info => {
+            let data = info.info.getChipAnalysis("D_IIR");
+            if (data.length > 0) {
+                return data[0] - data[2]
+            } else {
+                return -1;
+            }
+        },
+        compare: (a, b) => b - a
+    },
+    {
+        name: "R_chip_IIR_B_Div5", //籌碼面
+        display: "法人買(五)",
         type: "basic",
         getValue: info => {
             let data = info.info.getChipAnalysis("D_IIR");
             if (data.length > 0) {
                 return data[0] - data[4]
+            } else {
+                return -1;
+            }
+        },
+        compare: (a, b) => b - a
+    },
+    {
+        name: "R_chip_FIR_B_Div1", //籌碼面
+        display: "外資買(一)",
+        type: "basic",
+        getValue: info => {
+            let data = info.info.getChipAnalysis("D_FIR");
+            if (data.length > 0) {
+                return data[0] - data[1]
+            } else {
+                return -1;
+            }
+        },
+        compare: (a, b) => b - a
+    },
+    {
+        name: "R_chip_FIR_B_Div3", //籌碼面
+        display: "外資買(三)",
+        type: "basic",
+        getValue: info => {
+            let data = info.info.getChipAnalysis("D_FIR");
+            if (data.length > 0) {
+                return data[0] - data[2]
             } else {
                 return -1;
             }
@@ -60,28 +88,3 @@ export let rankObj = [
 ];
 
 
-// let advancedRankObj = [];
-
-// let extendMoudle = []
-
-// let getRankList = () => {
-
-// }
-
-
-// class moduleController {
-//     constructor(){
-//     }
-//     isBasicModule(name){
-//         // return Object.keys()
-//         let isSame = false
-//         basicRankModule.forEach(obj => {
-//            if(obj.name === name) isSame = true;
-//         });
-//         return isSame;
-//     }
-//     // getList(info, name)
-// }
-
-
-// export default moduleController;
