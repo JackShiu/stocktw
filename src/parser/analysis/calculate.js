@@ -187,10 +187,15 @@ module.exports.calculate = data => {
     let profitMonthYoY = data.getOperatingRevenue("M_YoY").slice(0, 6);
     let profitMonthYoY_Month = data.getOperatingRevenue("M_TIME").slice(0, 6);
     let count = 0;
+	let inValidCount = 0
     let sumOFprofitMonthYoY = profitMonthYoY.reduce((acc, cur, i) => {
         if ((cur < 0 && profitMonthYoY_Month !== MonthOfChianYear) || !isValidOfpredictProfitMonthYoY) {
-          isValidOfpredictProfitMonthYoY = false;
+		  if(cur < -5 || inValidCount > 0){
+			isValidOfpredictProfitMonthYoY = false;
             return acc;
+		  } else if(cur > -5){
+			  inValidCount++;
+		  }
         }
         count ++;
         return acc + cur;
