@@ -20,4 +20,14 @@ gulp.task('inline',function(){
         }))
         .pipe(gulp.dest('../../../out/'));
 })
-gulp.task('default', ['inline']);
+gulp.task('demo', function () {
+    var d = new Date();
+    var ds = d.getFullYear() + "-" + ('0' + (d.getMonth() + 1)).substring(-2) + "-" + ('0' + d.getDate()).substring(-2);
+    return gulp.src('../../../out/build/index.html')
+        .pipe(plumber())
+        .pipe(inline({
+            base: '../../../out/build/'
+        }))
+        .pipe(gulp.dest('../../../demo/'));
+})
+gulp.task('default', ['inline', 'demo']);
