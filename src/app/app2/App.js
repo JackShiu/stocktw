@@ -51,17 +51,30 @@ let mlist = {
       getValue: info =>{
         let cP = info.info.getPrice("D_closingPrice");
         let dP = info.info.getPrice("D_dailyPricing")
+        // let openP = info.info.getPrice("D_OpenPrice");
         let mColor;
-        let comma = ''
+        let limitColor;
+        let comma = '';
+        let changeLimit = (dP / (cP - dP)) * 100;//漲幅
+        // console.log(changeLimit)
+        let limit = 9.9
         if(dP>0){
+          if (changeLimit > limit)
+            limitColor = 'red';
           mColor = 'red';
           comma = '+';
         } else if (dP<0) {
+          if (changeLimit < -1*limit)
+            limitColor = "green";
           mColor = 'green'
           comma = '';
         }
+
         let dPp = <p style={{ color: mColor }}>{comma}{dP}</p>
-        return <div><div>{cP}</div> <div>{dPp}</div></div>
+        return <div>
+          <div style={{ backgroundColor: limitColor }}>{cP}</div>
+          <div>{dPp}</div>
+          </div>
       }
     },
     {
