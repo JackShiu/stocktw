@@ -232,8 +232,7 @@ module.exports.calculate = data => {
       PredictProfitRatio = sumOFProfitRatio / 4;
     }
 
-    if (isValidOfPEAverage
-        && isValidOfpredictProfitMonthYoY
+    if (isValidOfpredictProfitMonthYoY
         && isValidOfPredictProfitRatio ) {
         /* ===============
           5. 預估EPS
@@ -242,7 +241,10 @@ module.exports.calculate = data => {
         ================= */
         let Capital = data.getCapital("Q_value")[0];
         PredictEPS = (PredictedEarning * PredictProfitRatio * 100 / Capital * 10);
-
+    }
+    if (isValidOfPEAverage
+        && isValidOfpredictProfitMonthYoY
+        && isValidOfPredictProfitRatio ) {
         /* ===============
           6. 預估股價高低落點
         ================= */
