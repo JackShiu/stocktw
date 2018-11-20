@@ -22,7 +22,7 @@ class ListTypeInfoItem extends Component {
   getDescription = () => {
     let { mStockInfoManager, id} = this.props;
     let description = mStockInfoManager.getInfobyID(id).info.getProductType();
-      return (<div>{description}</div>)
+      return (<div>描述： {description}</div>)
   }
   getBasicInfo = () => {
       return <div></div>;

@@ -63,7 +63,12 @@ export let displayList = {
         },
         {
             name: "成交量",
-            getValue: info => info.info.getPrice("D_Volume")[0]
+            getValue: info => {
+                let volume = info.info.getPrice("D_Volume");
+                if(volume.length >0)
+                    return volume[volume.length -1]
+                return 0 ;
+            }
         }
     ],
     估算: [
@@ -112,7 +117,7 @@ export let displayList = {
                 <div>
                     <div>
                         法人(三)
-        </div>
+                </div>
                 </div>),
             getValue: info => {
                 let data = info.info.getChipAnalysis("D_IIR");
@@ -128,7 +133,7 @@ export let displayList = {
                 <div>
                     <div>
                         法人(五)
-        </div>
+                </div>
                 </div>),
             getValue: info => {
                 let data = info.info.getChipAnalysis("D_IIR");
@@ -144,7 +149,7 @@ export let displayList = {
                 <div>
                     <div>
                         外資(ㄧ)
-        </div>
+                    </div>
                 </div>),
             getValue: info => {
                 let data = info.info.getChipAnalysis("D_FIR");
@@ -160,7 +165,7 @@ export let displayList = {
                 <div>
                     <div>
                         外資(三)
-        </div>
+                    </div>
                 </div>),
             getValue: info => {
                 let data = info.info.getChipAnalysis("D_FIR");
@@ -244,12 +249,20 @@ export let btnList = [
         getLink: id => `http://jsjustweb.jihsun.com.tw/z/zc/zca/zca_${id}.djhtm`
     },
     {
-        name: "股狗",
-        getLink: id => `https://www.stockdog.com.tw/stockdog/index.php?sid=${id}`
+        name: "財務比率表(基本)",
+        getLink: id => `http://jsjustweb.jihsun.com.tw/z/zc/zcr/zcr0.djhtm?b=Q&a=${id}`
     },
     {
         name: "K線圖",
         getLink: id => `https://histock.tw/stock/tchart.aspx?no=${id}`
+    },
+    {
+        name: "神秘金字塔",
+        getLink: id => `https://norway.twsthr.info/StockHolders.aspx?stock=${id}`
+    },
+    {
+        name: "股狗",
+        getLink: id => `https://www.stockdog.com.tw/stockdog/index.php?sid=${id}`
     },
     {
         name: "HiStock",
@@ -263,9 +276,6 @@ export let btnList = [
         name: "財報狗",
         getLink: id => `https://statementdog.com/analysis/tpe/${id}`
     },
-    {
-        name: "神秘金字塔",
-        getLink: id => `https://norway.twsthr.info/StockHolders.aspx?stock=${id}`
-    },
+
 
 ];
