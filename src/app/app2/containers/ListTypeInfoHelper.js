@@ -41,7 +41,7 @@ export let displayList = {
                 let comma = '';
                 let changeLimit = (dP / (cP - dP)) * 100;//漲幅
                 // console.log(changeLimit)
-                let limit = 9.9
+                let limit = 9.7
                 if (dP > 0) {
                     if (changeLimit > limit)
                         limitColor = 'red';

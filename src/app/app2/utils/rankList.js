@@ -8,6 +8,54 @@ export let rankObj = [
         compare: (a, b) => b - a
     },
     {
+        name: "R_deltaChange_P", //漲幅
+        display: "漲幅排序",
+        type: "basic",
+        getValue: info => {
+            let cP = info.info.getPrice("D_closingPrice");
+            let dP = info.info.getPrice("D_dailyPricing");
+            return (dP / (cP - dP)) * 100;
+        },
+        compare: (a, b) => b - a
+    },
+    {
+        name: "R_deltaChange_N", //漲幅
+        display: "跌幅排序",
+        type: "basic",
+        getValue: info => {
+            let cP = info.info.getPrice("D_closingPrice");
+            let dP = info.info.getPrice("D_dailyPricing");
+            return (dP / (cP - dP)) * 100;
+        },
+        compare: (a, b) => a - b
+    },
+    {
+        name: "R_volume_P", //成交量
+        display: "成交量",
+        type: "basic",
+        getValue: info => {
+            let volume = info.info.getPrice("D_Volume");
+            if (volume.length > 0)
+                return volume[volume.length - 1]
+            return 0;
+        },
+        compare: (a, b) => b -a
+    },
+    {
+        name: "R_DailyTradingVoluem", //成交價
+        display: "成交價",
+        type: "basic",
+        getValue: info => {
+            let cP = info.info.getPrice("D_closingPrice");
+            let a_volume = info.info.getPrice("D_Volume");
+            let volume = 0;
+            if (a_volume.length > 0)
+                volume = a_volume[a_volume.length - 1];
+            return cP* volume;
+        },
+        compare: (a, b) => b -a
+    },
+    {
         name: "R_chip_IIR_B_Div1", //籌碼面
         display: "法人買(ㄧ)",
         type: "basic",
