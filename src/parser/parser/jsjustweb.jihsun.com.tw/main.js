@@ -14,7 +14,7 @@ module.exports.getWebAddress = getWebAddress = stockID => {
     const PerformanceWeb_S = `http://jsjustweb.jihsun.com.tw/z/zc/zcd_${stockID}.djhtm`;
     const PerformanceWeb_Y = `http://jsjustweb.jihsun.com.tw/z/zc/zcdj_${stockID}.djhtm`;
     const InstitutionalInvestor = `http://jsjustweb.jihsun.com.tw/z/zc/zcl/zcl.djhtm?a=${stockID}&b=2`;
-    const CandlestickChart = `http://jsjustweb.jihsun.com.tw/z/BCD/czkc1.djbcd?a=${stockID}&b=D&c=60&E=1&ver=5`;
+    const CandlestickChart = `http://jsjustweb.jihsun.com.tw/z/BCD/czkc1.djbcd?a=${stockID}&b=D&c=120&E=1&ver=5`;
     const Earningpower = `http://jsjustweb.jihsun.com.tw/z/zc/zce/zce_${stockID}.djhtm`;
     return {
         BasicInfoWeb,

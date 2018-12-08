@@ -20,10 +20,7 @@ module.exports.extractCandlestickChart = ($, option) => {
 
 
 const chagneStringtoArray = value => {
-    let array = value.split(',');
-    // // 只存60筆
-    // let set = array.length - 60;
-    // return array.slice(set);
+    let array = value.split(',').reverse();
     return array;
 
 }

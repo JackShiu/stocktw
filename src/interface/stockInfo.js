@@ -1,3 +1,24 @@
+/*---------------------------------*/
+/* utils                           */
+/*---------------------------------*/
+/*
+    Function getMovingAverage
+    parameters:
+        interval: 5,10,20,60
+        data: integer array ([1,2,3,4,5])
+*/
+const getMovingAverage = (interval, data) => {
+    if (data.length < interval) return [0];
+    return data.map((v, i) => {
+        let innerVal = data.slice(i, i + interval);
+        if (innerVal.length < interval) return 0;
+        return innerVal.reduce((a, b) => parseFloat(a) + parseFloat(b), 0) / interval;
+    });
+}
+
+/*---------------------------------*/
+/* stockInf                        */
+/*---------------------------------*/
 
 module.exports.getEmptyStockInfo = getEmptyStockInfo = function () {
     return ({
@@ -13,7 +34,7 @@ module.exports.getEmptyStockInfo = getEmptyStockInfo = function () {
             s_Q_TIME: null
         },
         o_Price: {
-            s_closingPrice: null,
+            s_closingPrice: null, //當日收盤價
             s_maxInYear: null,
             s_minInYear: null,
             s_dailyPricing: null, // 當日漲跌,
@@ -202,7 +223,7 @@ stockInfo.prototype.setPrice = function (type, data = null){
 }
 stockInfo.prototype.getPrice = function(type){
     switch (type) {
-        case "D_closingPrice":
+        case "D_closingPrice": //當日收盤價
             return this.info.o_Price.s_closingPrice;
             break;
         case "D_maxInYear":
@@ -226,7 +247,7 @@ stockInfo.prototype.getPrice = function(type){
         case "D_LowestPrice":
             return this.info.o_Price.a_D_LowestPrice;
             break;
-        case "D_ClosePrice":
+        case "D_ClosePrice": //每日收盤價 array
             return this.info.o_Price.a_D_ClosePrice;
             break;
         case "D_Volume":
@@ -324,30 +345,32 @@ stockInfo.prototype.getChipAnalysis = function (type) {
     }
 }
 
-stockInfo.prototype.setTechnicalAnalysis = function (type, data = null) {
+stockInfo.prototype.getAvergeValue = function (type) {
+    let max_range = 10;
     switch (type) {
-        case "MA5":
-            this.info.o_TechnicalAnalysis.s_D_MA5 = data;
+        case "Price.MA5":
+            return getMovingAverage(5, this.info.o_Price.a_D_ClosePrice).slice(0, max_range);
             break;
-        case "MA10":
-            this.info.o_TechnicalAnalysis.s_D_MA10 = data;
+        case "Price.MA10":
+            return getMovingAverage(10, this.info.o_Price.a_D_ClosePrice).slice(0, max_range);
             break;
-        case "MA60":
-            this.info.o_TechnicalAnalysis.s_D_MA60 = data;
+        case "Price.MA20":
+            return getMovingAverage(20, this.info.o_Price.a_D_ClosePrice).slice(0, max_range);
             break;
-    }
-}
-
-stockInfo.prototype.getTechnicalAnalysis = function (type) {
-    switch (type) {
-        case "MA5":
-            return this.info.o_TechnicalAnalysis.s_D_MA5;
+        case "Price.MA60":
+            return getMovingAverage(60, this.info.o_Price.a_D_ClosePrice).slice(0, max_range);
             break;
-        case "MA10":
-            return this.info.o_TechnicalAnalysis.s_D_MA10;
+        case "Volume.MA5":
+            return getMovingAverage(5, this.info.o_Price.a_D_Volume).slice(0, max_range);
             break;
-        case "MA60":
-            return this.info.o_TechnicalAnalysis.s_D_MA60;
+        case "Volume.MA10":
+            return getMovingAverage(10, this.info.o_Price.a_D_Volume).slice(0, max_range);
+            break;
+        case "Volume.MA20":
+            return getMovingAverage(20, this.info.o_Price.a_D_Volume).slice(0, max_range);
+            break;
+        case "Volume.MA60":
+            return getMovingAverage(60, this.info.o_Price.a_D_Volume).slice(0, max_range);
             break;
     }
 }
@@ -658,6 +681,7 @@ stockInfo.prototype.setBasicCategory = function (Category) {
 stockInfo.prototype.getBasicCategory = function () {
     return this.basic.Category;
 }
+
 
 /*---------------------------------*/
 /* toString                        */

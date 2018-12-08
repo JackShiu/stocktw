@@ -71,6 +71,14 @@ module.exports.updateCandlestickChart = (res, info) => {
     time[2] = `${M}/${D}`;
     info.setUpdatedTime("D_TIME", time);
     // console.log(info.getUpdatedTime());
+    // console.log(info.getAvergeValue("Price.MA5"));
+    // console.log(info.getAvergeValue("Price.MA10"));
+    // console.log(info.getAvergeValue("Price.MA20"));
+    // console.log(info.getAvergeValue("Price.MA60"));
+    // console.log(info.getAvergeValue("Volume.MA5"));
+    // console.log(info.getAvergeValue("Volume.MA10"));
+    // console.log(info.getAvergeValue("Volume.MA20"));
+    // console.log(info.getAvergeValue("Volume.MA60"));
     return info;
 };
 

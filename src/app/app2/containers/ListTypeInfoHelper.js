@@ -66,16 +66,16 @@ export let displayList = {
             getValue: info => {
                 let volume = info.info.getPrice("D_Volume");
                 if(volume.length >0)
-                    return volume[volume.length -1]
+                    return volume[0]
                 return 0 ;
             }
         }
     ],
     估算: [
-        {
-            name: "排名",
-            getValue: info => info.R_estimated
-        },
+        // {
+        //     name: "排名",
+        //     getValue: info => info.R_estimated
+        // },
         {
             name: "預估EPS",
             getValue: info => {
@@ -108,10 +108,10 @@ export let displayList = {
         }
     ],
     籌碼面: [
-        {
-            name: "排名",//(<p><div>排名</div><div>(法三)</div></p>),
-            getValue: info => info.R_chip_IIR_B_Div3
-        },
+        // {
+        //     name: "排名",//(<p><div>排名</div><div>(法三)</div></p>),
+        //     getValue: info => info.R_chip_IIR_B_Div3
+        // },
         {
             name: (
                 <div>
@@ -200,10 +200,10 @@ export let displayList = {
     //   }
     // ],
     股利: [
-        {
-            name: "排名",
-            getValue: info => info.R_dividend
-        },
+        // {
+        //     name: "排名",
+        //     getValue: info => info.R_dividend
+        // },
         {
             name: "股利",
             getValue: info =>
