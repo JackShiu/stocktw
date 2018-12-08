@@ -57,6 +57,7 @@ class stockInfoManager {
             let MA20 = getMovingAverage(20, info.getPrice("D_ClosePrice")) || [0];
             let MA60 = getMovingAverage(60, info.getPrice("D_ClosePrice")) || [0];
             let Volume_MA5 = getMovingAverage(5, info.getPrice("D_Volume"))|| [0];
+            let Volume_MA10 = getMovingAverage(10, info.getPrice("D_Volume"))|| [0];
             //store in local variable
             // console.log(MA10)
             this.o_stockEvaluatedInfo[id] = {

@@ -9,7 +9,7 @@ export let rankObj = [
     },
     {
         name: "R_deltaChange_P", //漲幅
-        display: "漲幅排序",
+        display: "漲幅排序(一)",
         type: "basic",
         getValue: info => {
             let cP = info.info.getPrice("D_closingPrice");
@@ -19,8 +19,21 @@ export let rankObj = [
         compare: (a, b) => b - a
     },
     {
+        name: "R_deltaChange_P_r5", //漲幅
+        display: "漲幅排序(五)",
+        type: "basic",
+        getValue: info => {
+            let a_price = info.info.getPrice("D_ClosePrice") || [0];
+            let delta = 5;
+            let p0 = a_price[a_price.length - 1];
+            let p5 = a_price[a_price.length - 1 - delta];
+            return (p0 - p5) / p0 * 100;
+        },
+        compare: (a, b) => b - a
+    },
+    {
         name: "R_deltaChange_N", //漲幅
-        display: "跌幅排序",
+        display: "跌幅排序(一)",
         type: "basic",
         getValue: info => {
             let cP = info.info.getPrice("D_closingPrice");
@@ -31,7 +44,7 @@ export let rankObj = [
     },
     {
         name: "R_volume_P", //成交量
-        display: "成交量",
+        display: "成交量排序(一)",
         type: "basic",
         getValue: info => {
             let volume = info.info.getPrice("D_Volume");
@@ -42,8 +55,8 @@ export let rankObj = [
         compare: (a, b) => b -a
     },
     {
-        name: "R_DailyTradingVoluem", //成交價
-        display: "成交價",
+        name: "R_DailyTradingVolume", //成交價
+        display: "成交價排序(一)",
         type: "basic",
         getValue: info => {
             let cP = info.info.getPrice("D_closingPrice");
@@ -195,15 +208,8 @@ export let rankObj = [
         display: "法人排序+條件.2",
         type: "advanced",
         tooltip:'法人買三(序)+三天漲幅<15%',
-        getValue: info => {
-            let data = info.info.getChipAnalysis("D_IIR");
-            if (data.length > 0) {
-                return data[0] - data[2]
-            } else {
-                return -1;
-            }
-        },
-        compare: (a, b) => b - a,
+        getValue: info => info.R_chip_IIR_B_Div3,
+        compare: (a, b) => a - b,
         filter: info => {
             let price = info.info.getPrice("D_ClosePrice") || [0];
             let length = price.length;
@@ -216,6 +222,62 @@ export let rankObj = [
             return false
         }
     },
+    {
+        name: "R_chip_FIR_Ad_3",
+        display: "法人排序+條件.3",
+        type: "advanced",
+        tooltip:'法人買三(序)+站上5MA,10MA,20MA +爆大量(相對過去10天)1.5倍 ',
+        getValue: info => info.R_chip_IIR_B_Div3,
+        compare: (a, b) => a - b,
+        filter: info => {
+            let a_price = info.info.getPrice("D_ClosePrice")[0] || [0];
+            let price = a_price[a_price.length - 1];
+            let MA5 = info.MA5;
+            let MA10 = info.MA10;
+            let MA20 = info.MA20;
+            if (price < MA5) return false;
+            if (price < MA10) return false;
+            if (price < MA20) return false;
+            let a_volume = info.info.getPrice("D_Volume") || [0];
+            let volume = a_volume[a_volume.length - 1];
+            let Volume_MA10 = info.Volume_MA10;
+            if (volume < Volume_MA10 * 1.5) return false;
+            //
+            return true;
+        }
+    },
+    // {
+    //     name: "R_HotStock_Select_Ad_1",
+    //     display: "成交價序＋條件.1",
+    //     type: "advanced",
+    //     tooltip: '成交量正規化序(一) + 站上5MA,10MA,20MA +爆大量(相對過去10天)1.5倍 + 法人買(ㄧ)',
+    //     getValue: info => {
+    //         let tradingVolume = info.R_DailyTradingVolume || 0;
+    //         let captial = info.info.getCapital("D_Current") ||1;
+    //         // console.log(tradingVolume , captial);
+    //         // tradingVolume %= 1000000000;
+    //         return tradingVolume / captial * 100 ;
+    //     },
+    //     compare: (a, b) => a - b,
+    //     filter: info => {
+    //         let a_price = info.info.getPrice("D_ClosePrice")[0] || [0];
+    //         let price = a_price[a_price.length -1 ];
+    //         let MA5 = info.MA5;
+    //         let MA10 = info.MA10;
+    //         let MA20 = info.MA20;
+    //         if(price < MA5) return false;
+    //         if(price < MA10) return false;
+    //         if(price < MA20) return false;
+    //         let a_volume = info.info.getPrice("D_Volume") || [0];
+    //         let volume = a_volume[a_volume.length - 1];
+    //         let Volume_MA10 = info.Volume_MA10;
+    //         if (volume < Volume_MA10 * 1.5 ) return false;
+    //         let IIR_B_Div1 = info.R_chip_IIR_B_Div1; //法人買一
+    //         if (IIR_B_Div1 < 0) return false;
+    //         //
+    //         return true;
+    //     }
+    // },
 ];
 
 
