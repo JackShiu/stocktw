@@ -12,7 +12,8 @@ const {
     getPerformanceWeb_Y,
     getInstitutionalInvestor,
     getCandlestickChart,
-    getEarningpower
+    getEarningpower,
+    getmainForceRate
 } = require("../parser/jsjustweb.jihsun.com.tw/main");
 const mStockInfoUpdater = require('./StockInfoUpdater');
 const { getStockIDList } = require("../parser/isin.twse.com.tw/main");
@@ -61,6 +62,17 @@ const getToday = () => {
     return moment()
     .format("MM/DD"); //10/15
 }
+
+const getWeek = () => {
+    return moment().format("E");
+}
+
+const getValidDay = () => {
+  let deltaWeek = getWeek() <= 5 ? 0 : getWeek() - 5;
+  return moment()
+    .subtract(deltaWeek, "day")
+    .format("MM/DD"); //10/15
+};
 
 const historcialDataFile = "src/data/all_stock_value.json";
 let o_ParsedStockInfoObject = {};
@@ -122,24 +134,49 @@ let estimate = async (stockID, options) => {
 
         if (forceUpdateAll || forceNotToUpdateAll){
             // 每日 - 基本資料
-            if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[0] !== getToday()) {
+            if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[0] !== getValidDay()) {
                 let res = await fetchController(stockID, options, getBasicInfoWeb);
                 if(res) info = mStockInfoUpdater.updateBaicInfoWeb(res, info);
                 s_Update_info += "日-基本更新\n";
             }
 
             // 每日 - 三大法人資料
-            if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[1] !== getToday()) {
+            if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[1] !== getValidDay()) {
                 let res = await fetchController(stockID, options, getInstitutionalInvestor);
                 if(res) info = mStockInfoUpdater.updateInstitutionalInvestor(res, info);
                 s_Update_info += "日-三大法人更新\n";
             }
 
             //每日 - K線圖資料
-            if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[2] !== getToday()) {
+            if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[2] !== getValidDay()) {
                 let res = await fetchController(stockID, options, getCandlestickChart);
                 if(res) info = mStockInfoUpdater.updateCandlestickChart(res, info);
                 s_Update_info += "日-K線圖更新\n";
+            }
+
+            //每日 - 主力籌碼
+            if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[3] !== getValidDay()) {
+                let res = await fetchController(stockID, { ...options, range: 1 }, getmainForceRate);
+                if (res) info = mStockInfoUpdater.updateMainForceRate(res, info, 1);
+                s_Update_info += "日-主力籌碼(1)\n";
+            }
+            //每日 - 主力籌碼
+            if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[4] !== getValidDay()) {
+                let res = await fetchController(stockID, { ...options, range: 5 }, getmainForceRate);
+                if (res) info = mStockInfoUpdater.updateMainForceRate(res, info, 5);
+                s_Update_info += "日-主力籌碼(5)\n";
+            }
+            //每日 - 主力籌碼
+            if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[5] !== getValidDay()) {
+                let res = await fetchController(stockID, { ...options, range: 20 }, getmainForceRate);
+                if (res) info = mStockInfoUpdater.updateMainForceRate(res, info, 20);
+                s_Update_info += "日-主力籌碼(20)\n";
+            }
+            //每日 - 主力籌碼
+            if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[6] !== getValidDay()) {
+                let res = await fetchController(stockID, { ...options, range: 60 }, getmainForceRate);
+                if (res) info = mStockInfoUpdater.updateMainForceRate(res, info, 60);
+                s_Update_info += "日-主力籌碼(60)\n";
             }
 
             //每月 - 月營收明細

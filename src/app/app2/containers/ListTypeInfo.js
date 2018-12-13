@@ -17,7 +17,7 @@ class ListTypeInfo extends Component {
             {Object.keys(listTypeInfoList).map(title => {
                 let col = listTypeInfoList[title].length;
                 return <th key={title} colSpan={col}>
-                    {title}
+                    <div style={{textAlign:'center'}}>{title}</div>
                 </th>;
             })}
         </tr>
@@ -26,7 +26,7 @@ class ListTypeInfo extends Component {
         <tr style={{backgroundColor: 'grey'}} key='thead-tr-2'>
             {Object.keys(listTypeInfoList).reduce((acc, title) => {
                 let item = listTypeInfoList[title].map((obj, i) => (
-                    <th key={title + "-tr-" + i}>{obj.name}</th>
+                    <th key={title + "-tr-" + i}><div style={{textAlign:'center'}}>{obj.name}</div></th>
                 ));
                 return acc.concat(item);
             }, [])}
@@ -71,7 +71,7 @@ class ListTypeInfo extends Component {
                     .slice(0, 200)
                     .map((id, index) => {
                         let item = <ListTypeInfoItem key={id} id={id} rank={index} {...this.props} />;
-                        if(index!= 0 && index%10 ===0 ) {
+                        if(index!= 0 && index%5 ===0 ) {
                             return [item, this.getTitle()];
                         }
                         return item;

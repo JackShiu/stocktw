@@ -67,20 +67,38 @@ module.exports.updateCandlestickChart = (res, info) => {
     info.setPrice("D_Volume", res.a_D_Volume);
     //update time
     let time = info.getUpdatedTime("D_TIME") || [];
-    let [Y, M, D] = res.a_D_TIME[res.a_D_TIME.length - 1].split('/');
+    let [Y, M, D] = res.a_D_TIME[0].split('/');
     time[2] = `${M}/${D}`;
     info.setUpdatedTime("D_TIME", time);
     // console.log(info.getUpdatedTime());
-    // console.log(info.getAvergeValue("Price.MA5"));
-    // console.log(info.getAvergeValue("Price.MA10"));
-    // console.log(info.getAvergeValue("Price.MA20"));
-    // console.log(info.getAvergeValue("Price.MA60"));
-    // console.log(info.getAvergeValue("Volume.MA5"));
-    // console.log(info.getAvergeValue("Volume.MA10"));
-    // console.log(info.getAvergeValue("Volume.MA20"));
-    // console.log(info.getAvergeValue("Volume.MA60"));
     return info;
 };
+
+module.exports.updateMainForceRate = (res, info, interval) => {
+    let time = info.getUpdatedTime("D_TIME") || [];
+    switch (interval) {
+        case 1:
+            info.setMainForceVolume("diff_1", res.s_D_mainForce_Diff_volume);
+            time[3] = res.s_D_TIME;
+            break;
+        case 5:
+            info.setMainForceVolume("diff_5", res.s_D_mainForce_Diff_volume);
+            time[4] = res.s_D_TIME;
+            break;
+        case 20:
+            info.setMainForceVolume("diff_20", res.s_D_mainForce_Diff_volume);
+            time[5] = res.s_D_TIME;
+            break;
+        case 60:
+            info.setMainForceVolume("diff_60", res.s_D_mainForce_Diff_volume);
+            time[6] = res.s_D_TIME;
+            break;
+        default:
+            break;
+    }
+    info.setUpdatedTime("D_TIME", time);
+    return info;
+}
 
 module.exports.updateRevenueWeb_M = (res, info) => {
     info.setOperatingRevenue("M_value", res.a_OperatingRevenue_M);

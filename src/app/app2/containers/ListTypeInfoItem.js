@@ -52,16 +52,16 @@ class ListTypeInfoItem extends Component {
         {//className = active success info warning danger
         Object.keys(displayList).reduce((acc, title) => {
           let item = displayList[title].map((obj, i) => {
-            let color = String(obj.name).includes("排名") ? "warning" : "";
+            let color = String(obj.name).includes("排名") ? "warning":"";
             let key = `${title}-${id}-${i}`;
             colSpan++;
             //每行前面添加 index
             if (i == 0 && title == "排序") {
-              return <th key={key}>{rank} </th>;
+              return <th key={key} class={"warning"}>{rank} </th>;
             }
             return (
-              <th key={key} class={color}>
-                {obj.getValue(mStockInfoManager.getInfobyID(id))}
+              <th key={key} class={color} style={{ backgroundColor: obj.getColor|| ""}}>
+                <div style={{ textAlign: "center" }}>{obj.getValue(mStockInfoManager.getInfobyID(id))}</div>
               </th>
             );
           });

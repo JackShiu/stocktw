@@ -7,6 +7,7 @@ const { extractPerformance_Y} = require("./performanceWeb_Y");
 const { extractInstitutionalInvestor } = require("./institutionalInvestor");
 const { extractCandlestickChart } = require("./candlestickChart");
 const { extractEarningpower } = require("./earningPower");
+const { extractmainForceRate } = require("./mainForceRate");
 
 module.exports.getWebAddress = getWebAddress = stockID => {
     const BasicInfoWeb = `http://jsjustweb.jihsun.com.tw/z/zc/zca/zca_${stockID}.djhtm`;
@@ -16,6 +17,12 @@ module.exports.getWebAddress = getWebAddress = stockID => {
     const InstitutionalInvestor = `http://jsjustweb.jihsun.com.tw/z/zc/zcl/zcl.djhtm?a=${stockID}&b=2`;
     const CandlestickChart = `http://jsjustweb.jihsun.com.tw/z/BCD/czkc1.djbcd?a=${stockID}&b=D&c=120&E=1&ver=5`;
     const Earningpower = `http://jsjustweb.jihsun.com.tw/z/zc/zce/zce_${stockID}.djhtm`;
+    const mainForceRate_1 = `http://jsjustweb.jihsun.com.tw/z/zc/zco/zco_${stockID}_1.djhtm`;
+    const mainForceRate_5 = `http://jsjustweb.jihsun.com.tw/z/zc/zco/zco_${stockID}_2.djhtm`;
+    // const mainForceRate_10 = `http://jsjustweb.jihsun.com.tw/z/zc/zco/zco_${stockID}_3.djhtm`;
+    const mainForceRate_20 = `http://jsjustweb.jihsun.com.tw/z/zc/zco/zco_${stockID}_4.djhtm`;
+    const mainForceRate_60 = `http://jsjustweb.jihsun.com.tw/z/zc/zco/zco_${stockID}_6.djhtm`;
+
     return {
         BasicInfoWeb,
         RevenueWeb_M,
@@ -23,7 +30,13 @@ module.exports.getWebAddress = getWebAddress = stockID => {
         PerformanceWeb_Y,
         InstitutionalInvestor,
         CandlestickChart,
-        Earningpower
+        Earningpower,
+        mainForceRate: {
+            mainForceRate_1,
+            mainForceRate_5,
+            mainForceRate_20,
+            mainForceRate_60
+        }
     }
 }
 
@@ -61,6 +74,26 @@ module.exports.getCandlestickChart = async (stockID, option) => {
 module.exports.getEarningpower = async (stockID, option) => {
     const { Earningpower } = myWeb(stockID);
     return await queryService(Earningpower, extractEarningpower, option);
+}
+
+module.exports.getmainForceRate = async (stockID, option) => {
+    const { mainForceRate } = myWeb(stockID);
+    switch (option.range) {
+        case 1:
+            return await queryService(mainForceRate.mainForceRate_1, extractmainForceRate, option);
+            break;
+        case 5:
+            return await queryService(mainForceRate.mainForceRate_5, extractmainForceRate, option);
+            break;
+        case 20:
+            return await queryService(mainForceRate.mainForceRate_20, extractmainForceRate, option);
+            break;
+        case 60:
+            return await queryService(mainForceRate.mainForceRate_60, extractmainForceRate, option);
+            break;
+
+    }
+    return await {}
 }
 
 /*

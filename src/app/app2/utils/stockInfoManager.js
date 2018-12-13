@@ -47,13 +47,34 @@ class stockInfoManager {
             let Volume_MA10 = info.getAvergeValue("Volume.MA10");
             //store in local variable
             // console.log(MA10)
+            let sum_of_volume_1 = parseInt(info.getPrice("D_Volume")[0])|| 0;
+            let sum_of_volume_5 = info.getPrice("D_Volume")
+                                    .slice(0,5)
+                                    .reduce((acc,v)=>acc+parseInt(v),0) || 0
+            let sum_of_volume_20 = info.getPrice("D_Volume")
+                                    .slice(0, 20)
+                                    .reduce((acc, v) => acc + parseInt(v),0) || 0
+            let sum_of_volume_60 = info.getPrice("D_Volume")
+                                    .slice(0, 60)
+                                    .reduce((acc, v) => acc + parseInt(v),0) || 0
+            let MainforceRate_1 = info.getMainForceVolume('diff_1')/sum_of_volume_1 * 100;
+            let MainforceRate_5 = info.getMainForceVolume('diff_5')/sum_of_volume_5 * 100;
+            let MainforceRate_20 = info.getMainForceVolume('diff_20')/sum_of_volume_20 * 100;
+            let MainforceRate_60 = info.getMainForceVolume('diff_60')/sum_of_volume_60 * 100;
+            // console.log(info.getBasicID(), sum_of_volume_1, sum_of_volume_5, sum_of_volume_20, sum_of_volume_60);
+            // console.log(info.getBasicID(), MainforceRate_1, MainforceRate_5, MainforceRate_20, MainforceRate_60);
+
             this.o_stockEvaluatedInfo[id] = {
                 ... predictInfo,
                 MA5,
                 MA10,
                 MA20,
                 MA60,
-                Volume_MA5
+                Volume_MA5,
+                MainforceRate_1,
+                MainforceRate_5,
+                MainforceRate_20,
+                MainforceRate_60,
             };
         })
     }

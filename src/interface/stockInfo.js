@@ -59,6 +59,12 @@ module.exports.getEmptyStockInfo = getEmptyStockInfo = function () {
             a_D_IIR: [], //Institutional investors ratio
             s_D_NBNS: null //net buy/ net sell
         },
+        o_MainForceVolume: { //主力籌碼 買賣超量
+            s_Diff_Volume_1: null,
+            s_Diff_Volume_5: null,
+            s_Diff_Volume_20: null,
+            s_Diff_Volume_60: null,
+        },
         o_TechnicalAnalysis: { //技術面
             s_D_MA5: null,
             s_D_MA10: null,
@@ -250,7 +256,7 @@ stockInfo.prototype.getPrice = function(type){
         case "D_ClosePrice": //每日收盤價 array
             return this.info.o_Price.a_D_ClosePrice;
             break;
-        case "D_Volume":
+        case "D_Volume": //每日 成交量 array
             return this.info.o_Price.a_D_Volume;
             break;
         default:
@@ -307,6 +313,43 @@ stockInfo.prototype.getFundamentalAnalysis = function (type) {
             break;
     }
 }
+
+
+stockInfo.prototype.setMainForceVolume = function (type, data = null) {
+    switch (type) {
+      case "diff_1":
+        this.info.o_MainForceVolume.s_Diff_Volume_1 = data;
+        break;
+        case "diff_5":
+        this.info.o_MainForceVolume.s_Diff_Volume_5 = data;
+        break;
+        case "diff_20":
+        this.info.o_MainForceVolume.s_Diff_Volume_20 = data;
+        break;
+        case "diff_60":
+        this.info.o_MainForceVolume.s_Diff_Volume_60 = data;
+        break;
+    }
+};
+
+stockInfo.prototype.getMainForceVolume = function (type) {
+    switch (type) {
+      case "diff_1":
+        return this.info.o_MainForceVolume.s_Diff_Volume_1;
+        break;
+        case "diff_5":
+        return this.info.o_MainForceVolume.s_Diff_Volume_5;
+        break;
+        case "diff_20":
+        return this.info.o_MainForceVolume.s_Diff_Volume_20;
+        break;
+        case "diff_60":
+        return this.info.o_MainForceVolume.s_Diff_Volume_60;
+        break;
+        default:
+            return this.info.o_MainForceVolume;
+    }
+};
 
 stockInfo.prototype.setChipAnalysis = function (type, data = null) {
     switch (type) {
