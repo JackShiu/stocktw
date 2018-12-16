@@ -1,5 +1,4 @@
 node_modules
 out
-src/data
 package-lock.json
 .DS_Store
