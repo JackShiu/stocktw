@@ -71,42 +71,42 @@ export let displayList = {
             }
         }
     ],
-    // 估算: [
-    //     // {
-    //     //     name: "排名",
-    //     //     getValue: info => info.R_estimated
-    //     // },
-    //     {
-    //         name: "預估EPS",
-    //         getValue: info => {
-    //             let value = info.PredictEPS.toFixed(2);
-    //             return value > 0 ? value : "=";
-    //         }
-    //     },
-    //     {
-    //         name: "預估股價",
-    //         getValue: info => {
-    //             let L = info.PredictLowestPrice.toFixed(2);
-    //             let H = info.PredictHighestPrice.toFixed(2);
-    //             if (L < 0 && H < 0) {
-    //                 return "=";
-    //             } else {
-    //                 return (<div><div>{L}</div><div>{H}</div></div>);
-    //             }
-    //         }
-    //     },
-    //     {
-    //         name: "預估報酬",
-    //         getValue: info => {
-    //             let V = info.PredictEarningRatio.toFixed(2);
-    //             if (V != -1) {
-    //                 return V;
-    //             } else {
-    //                 return "=";
-    //             }
-    //         }
-    //     }
-    // ],
+    估算: [
+        // {
+        //     name: "排名",
+        //     getValue: info => info.R_estimated
+        // },
+        {
+            name: "預估EPS",
+            getValue: info => {
+                let value = info.PredictEPS.toFixed(2);
+                return value > 0 ? value : "=";
+            }
+        },
+        {
+            name: "預估股價",
+            getValue: info => {
+                let L = info.PredictLowestPrice.toFixed(2);
+                let H = info.PredictHighestPrice.toFixed(2);
+                if (L < 0 && H < 0) {
+                    return "=";
+                } else {
+                    return (<div><div>{L}</div><div>{H}</div></div>);
+                }
+            }
+        },
+        {
+            name: "預估報酬",
+            getValue: info => {
+                let V = info.PredictEarningRatio.toFixed(2);
+                if (V != -1) {
+                    return V;
+                } else {
+                    return "=";
+                }
+            }
+        }
+    ],
     籌碼面: [
         {
             name: (
@@ -179,55 +179,55 @@ export let displayList = {
             },
         },
     ],
-    大戶籌碼: [
-        {
-            name: (
-                <div>
-                    <p>籌碼集中度</p>
-                    <p>(1.5.20.60)(日)</p>
-                </div>),
-            getValue: info => {
-                let diff_1 = info.MainforceRate_1.toFixed(2) || 0;
-                let diff_5 = info.MainforceRate_5.toFixed(2) || 0;
-                let diff_20 = info.MainforceRate_20.toFixed(2) || 0;
-                let diff_60 = info.MainforceRate_60.toFixed(2) || 0;
-                const getColor = (value) => {
-                    if (value > 15) {
-                        return { backgroundColor: 'red' };
-                    } else if (value > 0) {
-                        return { color: 'red' };
-                    } else if (value < -15) {
-                        return { backgroundColor: 'green' };
-                    } else if (value < 0) {
-                        return { color: 'green' };
-                    }
-                    return {};
-                }
-                return <div>
-                    <div style={getColor(diff_1)}>{diff_1}%</div>
-                    <div style={getColor(diff_5)}>{diff_5}%</div>
-                    <div style={getColor(diff_20)}>{diff_20}%</div>
-                    <div style={getColor(diff_60)}>{diff_60}%</div>
-                </div>
-            },
-        },
-    //   {
-    //     name: "1MA",
-    //     getValue: info => info.MainforceRate_1.toFixed(2)
-    //   },
-    //   {
-    //     name: "5MA",
-    //     getValue: info => info.MainforceRate_5.toFixed(2)
-    //   },
-    //   {
-    //     name: "20MA",
-    //     getValue: info => info.MainforceRate_20.toFixed(2)
-    //   },
-    //   {
-    //     name: "60MA",
-    //     getValue: info => info.MainforceRate_60.toFixed(2)
-    //   }
-    ],
+    // 大戶籌碼: [
+    //     {
+    //         name: (
+    //             <div>
+    //                 <p>籌碼集中度</p>
+    //                 <p>(1.5.20.60)(日)</p>
+    //             </div>),
+    //         getValue: info => {
+    //             let diff_1 = info.MainforceRate_1.toFixed(2) || 0;
+    //             let diff_5 = info.MainforceRate_5.toFixed(2) || 0;
+    //             let diff_20 = info.MainforceRate_20.toFixed(2) || 0;
+    //             let diff_60 = info.MainforceRate_60.toFixed(2) || 0;
+    //             const getColor = (value) => {
+    //                 if (value > 15) {
+    //                     return { backgroundColor: 'red' };
+    //                 } else if (value > 0) {
+    //                     return { color: 'red' };
+    //                 } else if (value < -15) {
+    //                     return { backgroundColor: 'green' };
+    //                 } else if (value < 0) {
+    //                     return { color: 'green' };
+    //                 }
+    //                 return {};
+    //             }
+    //             return <div>
+    //                 <div style={getColor(diff_1)}>{diff_1}%</div>
+    //                 <div style={getColor(diff_5)}>{diff_5}%</div>
+    //                 <div style={getColor(diff_20)}>{diff_20}%</div>
+    //                 <div style={getColor(diff_60)}>{diff_60}%</div>
+    //             </div>
+    //         },
+    //     },
+    // //   {
+    // //     name: "1MA",
+    // //     getValue: info => info.MainforceRate_1.toFixed(2)
+    // //   },
+    // //   {
+    // //     name: "5MA",
+    // //     getValue: info => info.MainforceRate_5.toFixed(2)
+    // //   },
+    // //   {
+    // //     name: "20MA",
+    // //     getValue: info => info.MainforceRate_20.toFixed(2)
+    // //   },
+    // //   {
+    // //     name: "60MA",
+    // //     getValue: info => info.MainforceRate_60.toFixed(2)
+    // //   }
+    // ],
     股利: [
         // {
         //     name: "排名",

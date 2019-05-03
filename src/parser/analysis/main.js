@@ -155,29 +155,29 @@ let estimate = async (stockID, options) => {
             }
 
             //每日 - 主力籌碼
-            if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[3] !== getValidDay()) {
-                let res = await fetchController(stockID, { ...options, range: 1 }, getmainForceRate);
-                if (res) info = mStockInfoUpdater.updateMainForceRate(res, info, 1);
-                s_Update_info += "日-主力籌碼(1)\n";
-            }
+            // if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[3] !== getValidDay()) {
+            //     let res = await fetchController(stockID, { ...options, range: 1 }, getmainForceRate);
+            //     if (res) info = mStockInfoUpdater.updateMainForceRate(res, info, 1);
+            //     s_Update_info += "日-主力籌碼(1)\n";
+            // }
             //每日 - 主力籌碼
-            if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[4] !== getValidDay()) {
-                let res = await fetchController(stockID, { ...options, range: 5 }, getmainForceRate);
-                if (res) info = mStockInfoUpdater.updateMainForceRate(res, info, 5);
-                s_Update_info += "日-主力籌碼(5)\n";
-            }
+            // if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[4] !== getValidDay()) {
+            //     let res = await fetchController(stockID, { ...options, range: 5 }, getmainForceRate);
+            //     if (res) info = mStockInfoUpdater.updateMainForceRate(res, info, 5);
+            //     s_Update_info += "日-主力籌碼(5)\n";
+            // }
             //每日 - 主力籌碼
-            if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[5] !== getValidDay()) {
-                let res = await fetchController(stockID, { ...options, range: 20 }, getmainForceRate);
-                if (res) info = mStockInfoUpdater.updateMainForceRate(res, info, 20);
-                s_Update_info += "日-主力籌碼(20)\n";
-            }
+            // if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[5] !== getValidDay()) {
+            //     let res = await fetchController(stockID, { ...options, range: 20 }, getmainForceRate);
+            //     if (res) info = mStockInfoUpdater.updateMainForceRate(res, info, 20);
+            //     s_Update_info += "日-主力籌碼(20)\n";
+            // }
             //每日 - 主力籌碼
-            if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[6] !== getValidDay()) {
-                let res = await fetchController(stockID, { ...options, range: 60 }, getmainForceRate);
-                if (res) info = mStockInfoUpdater.updateMainForceRate(res, info, 60);
-                s_Update_info += "日-主力籌碼(60)\n";
-            }
+            // if (!info.getUpdatedTime("D_TIME") || info.getUpdatedTime("D_TIME")[6] !== getValidDay()) {
+            //     let res = await fetchController(stockID, { ...options, range: 60 }, getmainForceRate);
+            //     if (res) info = mStockInfoUpdater.updateMainForceRate(res, info, 60);
+            //     s_Update_info += "日-主力籌碼(60)\n";
+            // }
 
             //每月 - 月營收明細
             if (getLastMonth() !== info.getUpdatedTime("M_TIME") ) {
@@ -223,6 +223,8 @@ let estimate = async (stockID, options) => {
         if (s_Update_info.length > 0){
             console.log(s_Update_info);
             updateStockInfoToDB(stockID, info.export());
+            //儲存要回來的資料
+            writeHistorcialDataToFile();
         } else {
             console.log("沒有更新");
         }

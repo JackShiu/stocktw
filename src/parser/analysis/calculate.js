@@ -183,7 +183,7 @@ module.exports.calculate = data => {
 		2."最新的月營收年增率"與這"六個月的平均"，取出最小值當作預估營收年增率
 	================= */
     isValidOfpredictProfitMonthYoY = true;
-    let MonthOfChianYear = "2018.02";
+    let MonthOfChianYear = "2019.02";
     let profitMonthYoY = data.getOperatingRevenue("M_YoY").slice(0, 6);
     let profitMonthYoY_Month = data.getOperatingRevenue("M_TIME").slice(0, 6);
     let count = 0;
